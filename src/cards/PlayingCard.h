@@ -13,6 +13,7 @@ class PlayingCard : public Card {
     string color;
     string suit;
     string rank;
+    bool chosen;
   public:
     PlayingCard(string suit, string rank): suit(suit), rank(rank) 
     {
@@ -75,6 +76,11 @@ class PlayingCard : public Card {
       };
     };
 
+    void setChosen(bool chosen) 
+    {
+      this->chosen = chosen;
+    };
+
     //GETTERS
     string getSuit() 
     { 
@@ -94,6 +100,11 @@ class PlayingCard : public Card {
     int getChips() 
     {
       return this->chips;
+    };
+
+    bool isChosen() 
+    {
+      return this->chosen;
     };
 
     ~PlayingCard() {};
