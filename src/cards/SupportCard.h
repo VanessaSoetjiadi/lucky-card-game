@@ -20,6 +20,15 @@ class SupportCard : public EffectCard {
     };
 
     //MAKE GETTERS
+    bool get_isUsed() const 
+    {
+      return this->isUsed;
+    };
+    
+    void set_Used()
+    {
+      this->isUsed = true;
+    };
 
     ~SupportCard() {};
 };
