@@ -63,6 +63,12 @@ class InitDeck : public Deck {
       return this->deck.size();
     };
 
+    void makeDeck() override
+    {
+      this->makeDeck();
+    };
+
+    //DESTRUCTOR
     ~InitDeck() {};
 };
 
