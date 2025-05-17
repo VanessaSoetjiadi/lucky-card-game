@@ -13,7 +13,16 @@ class JokerCard : public EffectCard {
       set_bonus_mults(bonus_mults);
     };
 
-    //MAKE GETTERS--------------------------------------------------
+    //MAKE GETTERS
+    int get_lifespan()
+    {
+      return this->lifeSpan;
+    };
+
+    void subtract_lifespan(int n) 
+    {
+      this->lifeSpan -= n;
+    };
 
     ~JokerCard() {};
 };
