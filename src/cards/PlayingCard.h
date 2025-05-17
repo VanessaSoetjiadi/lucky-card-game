@@ -47,15 +47,15 @@ class PlayingCard : public Card {
     //SETTERS
     void set_chips() 
     {
-      this->chips = stoi(this->rank);
+      this->chips = stoi(this->rank); // Convert rank to integer for chips
     };
 
     void set_rank(string rank) 
     {
-      int temp = stoi(rank);
-      if (temp > 9) 
+      int temp = stoi(rank); // Convert rank to integer for comparison
+      if (temp > 9) // Check if rank is a face card
       {
-        switch(temp) 
+        switch(temp) // Convert rank to string representation
         {
           case 10:
             this->rank = 'J';
@@ -72,39 +72,39 @@ class PlayingCard : public Card {
         };
       } else 
       {
-        this->rank = rank;
+        this->rank = rank; // Set rank as string
       };
     };
 
     void setChosen(bool chosen) 
     {
-      this->chosen = chosen;
+      this->chosen = chosen;  // Set if card is chosen/not
     };
 
     //GETTERS
     string getSuit() 
     { 
-      return this->suit; 
+      return this->suit; // Return suit of the card
     };
 
     string getRank() 
     { 
-      return this->rank; 
+      return this->rank; // Return rank of the card
     };
 
     string getColor() 
     { 
-      return this->color; 
+      return this->color; // Return color of the card
     };
 
     int getChips() 
     {
-      return this->chips;
+      return this->chips; // Return chips of the card
     };
 
     bool isChosen() 
     {
-      return this->chosen;
+      return this->chosen; // Return if card is chosen/not
     };
 
     ~PlayingCard() {};
