@@ -13,13 +13,16 @@ class SupportCard : public EffectCard {
       set_bonus_mults(bonus_mults);
     };
 
-    //IF CARD IS USED
-    void supportIsUsed() 
-    {
-      this->isUsed = true;
-    };
-
     //MAKE GETTERS
+    bool get_isUsed() const 
+    {
+      return this->isUsed; // Return if card is used/not
+    };
+    
+    void set_Used()
+    {
+      this->isUsed = true; // Set card as used
+    };
 
     ~SupportCard() {};
 };
