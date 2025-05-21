@@ -1,16 +1,31 @@
 #ifndef DECK_H
 #define DECK_H
 
-//ADDITIONAL LIBRARY
+//VECTOR LIB
 #include <vector>
-#include <memory>
-
-#include "../cards/PlayingCard.h"
 
 class Deck {
+  protected:
+    int maximumNumCards;
   public:
-    virtual void makeDeck() = 0;
-    virtual unique_ptr<Card> discardCard(string suit, string rank) = 0;
+    //discards the card in the index
+    virtual void discardCard(int idx) = 0;
+
+    //returns the current cards in the deck
+    virtual int getCurrentCards() = 0;
+
+    //SETTER AND GETTER FOR MAX CARDS
+    void set_maximumNumCards(int n) 
+    {
+      this->maximumNumCards = n;
+    };
+    
+    int get_maximumNumCards() 
+    {
+      return this->maximumNumCards;
+    };
+
+    ~Deck() = default;
 };
 
-#endif
+#endif //DECK_H
