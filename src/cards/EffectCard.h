@@ -3,33 +3,14 @@
 
 #include "Card.h"
 
-const string Rarity[] { "Common", "Rare", "Special" };
+const string Rarity[] { "Common", "Rare", "Super Rare" };
 
 class EffectCard : public Card {
-  private:
+  protected:
     string rarity;
     int bonus_mults;
     int bonus_chips;
   public:
-    EffectCard() {
-      int random = this->randomizer();
-      this->rarity = Rarity[random];
-    };
-
-    ////PURE INHERITED
-    virtual void draw() {};
-    
-    virtual int randomizer() {
-      int max_percentage = 99;
-      random_device rd;
-      mt19937 gen(rd());
-      uniform_int_distribution<> dis(0, max_percentage);
-
-      if (dis(gen) < 70) return 0;
-      else if (dis(gen) < 85) return 1;
-      else return 2;
-    };
-
     //SETTERS
     void set_bonus_mults(int n) 
     {
@@ -46,8 +27,18 @@ class EffectCard : public Card {
     {
       return this->rarity; // Return the rarity of the effect card
     };
+    
+    int get_bonus_chips() 
+    {
+      return this->bonus_chips;
+    };
+
+    int get_bonus_mults() 
+    {
+      return this->bonus_mults;
+    };
 
     ~EffectCard() {};
 };
 
-#endif
+#endif //EFFECTCARD_H

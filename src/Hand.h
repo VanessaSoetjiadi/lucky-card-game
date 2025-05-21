@@ -1,213 +1,273 @@
 #ifndef HAND_H
 #define HAND_H
 
-//For sorting vectors and calculating the Hands
-#include <algorithm>
-#include <unordered_map>
+#include <map>
 
+#include "decks/InitDeck.h"
 #include "decks/PlayingDeck.h"
+#include "decks/JokerDeck.h"
+#include "decks/SupportDeck.h"
 
-#include "cards/PlayingCard.h"
-#include "cards/JokerCard.h"
-#include "cards/SupportCard.h"
+const string Hands[] {"High Card", "Royal Flush", "Straight Flush", "Flush", "Four of a Kind", "Full House", "Straight", "Three of a Kind", "Two Pair", "Pair"};
 
 class Hand {
   private:
-    vector<unique_ptr<Card>> deck;
-    int maximum_num_cards;
-
-    int total_chips;
-    int total_mults;
-    int total_score;
-
-    int num_hands;
-    int num_discards;
-
-    unordered_map<int, int> rankCount;
-    unordered_map<string, int> suitCount;
+    int maximumNumCards;
+    int totalChips;
+    int totalMults;
+    int totalScore;
+    int handsCount;
+    int discardsCount;
   public:
-    Hand(): maximum_num_cards(5), total_chips(0), total_mults(0), num_hands(4), num_discards(4), total_score(0) {};
+    Hand(): maximumNumCards(5), totalChips(0), totalMults(0), totalScore(0),handsCount(4), discardsCount(4) {};
 
-    //HAND BUTTON PRESSED
-    void pushHand(PlayingDeck& playDeck) 
+    //NOTE: For most of the calculating functions, we'll be iterating backwards since we're checking and deleting in one go.
+    void calculateChips (PlayingDeck& playDeck) 
     {
-      string idx = playDeck.pickHand();
-      
-      for(int i = 0; i < idx.length(); i++) 
+      for (int i = playDeck.getCurrentCards() - 1; i >= 0; i--) 
       {
-        int temp = stoi(string(1, idx[i]));
-
-        if (playDeck.getDeck()[temp] != nullptr) 
+        if (playDeck.getDeck()[i]->get_chosen()) 
         {
-          unique_ptr<Card> removed = playDeck.discardCard(temp);
-          if (removed != nullptr) 
-          {
-            this->deck.push_back(std::move(removed));
-          }
+          this->totalChips += playDeck.getDeck()[i]->get_chips();
+          playDeck.discardCard(i);
+        };
+      };
+    };
+
+    int checkHandType(PlayingDeck& playDeck) 
+    {
+      map<string, int> rankCount;
+      map<string, int> suitCount;
+
+      for (const auto& card : playDeck.getDeck()) {
+        //only add if it's chosen
+        if (card->get_chosen()) 
+        {
+          rankCount[card->get_rank()]++; // Increment count for this rank
+          suitCount[card->get_suit()]++; // Increment count for this suit
         };
       };
 
-      this->calculateScore();
-      this->num_hands--;
-    };
+      //CHECKER (DELETE LATER)
+      for (const auto& pair : rankCount) {
+        std::cout << "Rank: " << pair.first << ", Count: " << pair.second << std::endl;
+      }
 
-    //DISCARD BUTTON PRESSED----------------------------------------
-    void discardHand(PlayingDeck& playDeck) 
-    {
-      string idx = playDeck.pickDiscard();
-      
-      for(int i = 0; i < idx.length(); i++) 
-      {
-        int temp = stoi(string(1, idx[i]));
+      for (const auto& suitEntry : suitCount) {
+        std::cout << "Suit: " << suitEntry.first 
+        << ", Count: " << suitEntry.second << std::endl;
+      }
 
-        if (playDeck.getDeck()[temp] != nullptr) 
-        {
-          unique_ptr<Card> removed = playDeck.discardCard(temp);
-          if (removed != nullptr) 
-          {
-            this->deck.push_back(std::move(removed));
-          }
+      bool isFlush = false;
+      for (const auto& entry : suitCount) {
+        if (entry.second >= 5) {
+          isFlush = true;
+          break;
         };
       };
 
-      this->discardCard();
-      this->num_discards--;
-    };
-
-    //TOTALSCORE SPECIFIC FUNCTIONS
-    //SORTING DESCENDING FROM LEFT TO RIGHT
-    void sortHand() 
-    {
-      std::sort(this->deck.begin(), this->deck.end(), [](
-        const unique_ptr<Card>& a, 
-        const unique_ptr<Card>& b) 
-      {
-        
-        auto pa = dynamic_cast<PlayingCard*>(a.get());
-        auto pb = dynamic_cast<PlayingCard*>(b.get());
-
-        if (pa && pb)
-        {
-          return pa->getRank() < pb->getRank();
-        }
-
-        return false;
-      });
-
-      //Stores data about Hand
-      for (auto& card : this->deck) {
-        auto playingCard = dynamic_cast<PlayingCard*>(card.get());
-        if (playingCard) {
-          rankCount[playingCard->getChips()]++;
-          suitCount[playingCard->getSuit()]++;
+      bool isStraight = false;
+      vector<int> rankValues;
+      for (const auto& card : playDeck.getDeck()) {
+        rankValues.push_back(card->get_chips());
+      }
+      std::sort(rankValues.begin(), rankValues.end());
+      for (size_t i = 0; i <= rankValues.size() - 5; ++i) {
+        if (rankValues[i + 4] == rankValues[i] + 4) {
+          isStraight = true;
+          break;
         }
       }
-    };
 
-    //CALCULATE INDIVIDUAL CHIPS
-    void calculateChips() 
-    {
-      for (int i = 0; i < this->getCurrentCards(); i++) 
-      {
-        auto pc = dynamic_cast<PlayingCard*>(this->deck[i].get());
-        this->total_chips += pc->getChips();
-      };
-    };
-
-    //CALCULATE TOTAL SCORE (CHIPS + MULTS)
-    void calculateScore()
-    {
-      sortHand(); //NOT SURE IF NEED HERE
-      calculateChips();
-      //checkHand();
-      //CHECK JOKER + SUPPORT BONUSES ADD HERE------------------------------
-      this->discardCard();
-
-      this->total_score = this->total_chips*(1 + this->total_mults);
-    };
-
-    //HAND TYPES (ADD MORE FUNCTIONS HERE)------------------------------
-    void isPair() {
-      for (auto& entry : rankCount) {
-        if (entry.second == 2) 
-        {
-          add_total_chips(10);
-          add_total_mults(2);
-        };
+      //ROYAL FLUSH
+      if (isFlush && isStraight && rankValues.back() == 14) {
+        return 21;
       }
-    }
 
-    //COLLECTION OF HAND TYPES----------------------------------------
-    void checkHand() 
-    {
-      isPair();
-      //ADD MORE FUNCTIONS HERE
+      //STRAIGHT FLUSH
+      if (isFlush && isStraight) {
+        return 22;
+      }
+
+      //FOUR OF A KIND
+      for (const auto& entry : rankCount) {
+        if (entry.second == 4) {
+          return 23;
+        }
+      }
+
+      //FULL HOUSE
+      bool hasThree = false, hasTwo = false;
+      for (const auto& entry : rankCount) {
+        if (entry.second == 3) hasThree = true;
+        if (entry.second == 2) hasTwo = true;
+      }
+      if (hasThree && hasTwo) {
+        return 24;
+      }
+
+      //FLUSH
+      if (isFlush) {
+        return 25;
+      }
+
+      //THREE OF A KIND
+      if (hasThree) {
+        return 26;
+      }
+
+      // Check Straight
+      if (isStraight) {
+        return 27;
+      }
+
+      //TWO PAIR
+      int pairs = 0;
+      for (const auto& entry : rankCount) {
+        if (entry.second == 2) pairs++;
+      }
+      if (pairs >= 2) {
+        return 28;
+      }
+
+      //PAIR
+      if (pairs == 1) {
+        return 29;
+      }
+
+      //HIGH CARD
+      return rankValues.back();
     };
 
-    //CHECK JOKER IN USE, REDUCE THEIR LIFESPAN AFTER USAGE------------------
-    //CHECK SUPPORT CARD BOOL, IF BOOL IS TRUE, THEN ADD BONUSES TO CALCULATE SCORE -------------------------------------------------------------
-
-    //DELETE LATER - TO SEE IF HAS BEEN PRINTED
-    void printDeck() 
+    //DETERMINE BONUS MULTS, CHIPS FROM CheckHandType function
+    void calculatePlayingCardsPoints(int hands) 
     {
-      cout << "[ "; 
-      for (int i = 0; i < this->getCurrentCards(); i++) 
+      switch(hands) 
       {
-        auto playingCard = dynamic_cast<PlayingCard*>(this->deck[i].get());
-        cout << playingCard->getSuit() << playingCard->getRank() << " ";
+        case 21:
+          totalChips += 100;
+          totalMults += 8;
+          break;
+        case 22:
+          totalChips += 100;
+          totalMults += 8;
+          break;
+        case 23:
+          totalChips += 60;
+          totalMults += 7;
+          break;
+        case 24:
+          totalChips += 40;
+          totalMults += 4;
+          break;
+        case 25:
+          totalChips += 35;
+          totalMults += 4;
+          break;
+        case 26:
+          totalChips += 30;
+          totalMults += 3;
+          break;
+        case 27:
+          totalChips += 30;
+          totalMults += 3;
+          break;
+        case 28:
+          totalChips += 20;
+          totalMults += 2;
+          break;
+        case 29:
+          totalChips += 10;
+          totalMults += 2;
+          break;
+        default:
+          totalChips += hands;
+          break;
       };
-      cout << "]" << endl;
     };
 
-    //ERASE CARD FROM VECTOR
-    void discardCard() 
+    //CALCULATING THE TOTAL BONUS EFFECTS RECEIVED
+    void calculateEffectsCards(JokerDeck& jkDeck, SupportDeck& spDeck) 
     {
-      for (int i = this->getCurrentCards() - 1; i >= 0; i--) 
+      //Getting the total bonuses from the jokerDeck
+      for (int i = jkDeck.getCurrentCards() - 1; i >= 0; i--) 
       {
-        this->deck.erase(deck.begin() + i);
+        this->totalChips += jkDeck.getDeck()[i]->get_bonus_chips();
+        this->totalMults += jkDeck.getDeck()[i]->get_bonus_mults();
+        jkDeck.getDeck()[i]->subtract_lifespan();
+
+        //Deleting the jokerCard if it's lifespan is 0
+        if (jkDeck.getDeck()[i]->get_lifespan() < 1) 
+        {
+          jkDeck.discardCard(i);
+        };
       };
+
+      //Getting the total bonuses from the supportDeck
+      for (int i = spDeck.getCurrentCards() - 1; i >= 0; i--) 
+      {
+        if (spDeck.getDeck()[i]->get_isUsed()) 
+        {
+          this->totalChips += spDeck.getDeck()[i]->get_bonus_chips();
+          this->totalMults += spDeck.getDeck()[i]->get_bonus_mults();
+
+          //Deleting the support card since it's been used
+          spDeck.discardCard(i);
+        };
+      };
+    };
+
+    //WHEN HAND BUTTON IS PRESSED
+    void calculateTotalScore(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) 
+    {
+      add_handsCount(playDeck);
+      add_discardsCount(playDeck);
+
+      calculatePlayingCardsPoints(checkHandType(playDeck));
+
+      calculateChips(playDeck);
+      calculateEffectsCards(jkDeck, spDeck);
+
+      this->totalScore = this->totalChips*this->totalMults;
     };
 
     //SETTERS
-    void set_num_hands(int h) 
+    void add_handsCount (PlayingDeck& playDeck) 
     {
-      this->num_hands += h;
-    };
-    
-    void set_num_discards(int d) 
-    {
-      this->num_discards += d;
-    };
-
-    void add_total_chips(int n) 
-    {
-      this->total_chips += n;
+      for (int i = 0; i < playDeck.getCurrentCards(); i++) 
+      {
+        if (playDeck.getDeck()[i]->get_chosen()) 
+        {
+          if (playDeck.getDeck()[i]->get_color().compare(CardColor[1]) == 0) this->handsCount++;
+        };
+      };
     };
 
-    void add_total_mults(int n) 
+    void add_discardsCount (PlayingDeck& playDeck) 
     {
-      this->total_mults += n;
+      for (int i = 0; i < playDeck.getCurrentCards(); i++) 
+      {
+        if (playDeck.getDeck()[i]->get_chosen()) 
+        { 
+          if (playDeck.getDeck()[i]->get_color().compare(CardColor[2]) == 0) this->discardsCount++;
+        };
+      };
     };
 
     //GETTERS
-    int get_num_hands() 
+    int get_totalScore() 
     {
-      return this->num_hands;
-    };
-    
-    int get_num_discards() 
-    {
-      return this->num_discards;
+      return this->totalScore;
     };
 
-    int getCurrentCards() 
+    int get_handsCount() 
     {
-      return this->deck.size();
+      return this->handsCount;
     };
 
-    int get_total_score() 
+    int get_discardsCount() 
     {
-      return this->total_score;
+      return this->discardsCount;
     };
 
     ~Hand() {};

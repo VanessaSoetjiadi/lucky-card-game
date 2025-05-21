@@ -1,46 +1,47 @@
-#ifndef ABSTRACT_EFFECTS_DECK_H
-#define ABSTRACT_EFFECTS_DECK_H
+#ifndef ABSTRACT_PLAYING_DECK_H
+#define ABSTRACT_PLAYING_DECK_H
+
+#include <algorithm>
 
 #include "Deck.h"
-#include <vector>
+#include "../cards/PlayingCard.h"
 
 class AbstractPlayingDeck : public Deck {
-private:
-    vector<unique_ptr<Card>> deck; // Vector to hold PlayingCard objects
-public:
-    AbstractPlayingDeck(); // Default constructor
-    AbstractPlayingDeck(int maxCards); // Constructor with maximum cards
-    ~AbstractPlayingDeck(); // Destructor
-    
-    // Create the deck of cards
-    vector<unique_ptr<Card>>& getDeck() {
-        return this->deck; 
-    }
-    
-    void sortSuits(){ // Sort the deck based on the suits
-        std::sort(this->deck.begin(), this->deck.end(), [](const unique_ptr<Card>& a, const unique_ptr<Card>& b) {
-            // Dynamic cast to PlayingCard to access Suit
-            auto pa = dynamic_cast<PlayingCard*>(a.get()); 
-            auto pb = dynamic_cast<PlayingCard*>(b.get()); 
-            if (pa && pb) { 
-                return pa->getSuit() < pb->getSuit(); // Compare suits
-            }
-            return false;
-        });
-    }
-    void sortRanks(){ // Sort the deck based on the ranks
-        std::sort(this->deck.begin(), this->deck.end(), [](const unique_ptr<Card>& a, const unique_ptr<Card>& b) {
-            // Dynamic cast to PlayingCard to access Rank
-            auto pa = dynamic_cast<PlayingCard*>(a.get());
-            auto pb = dynamic_cast<PlayingCard*>(b.get());
-            if (pa && pb) {
-                return pa->getRank() < pb->getRank(); // Compare ranks
-            }
-            return false;
-        });
-    }
-    virtual void addEffectCard() = 0; // Pure virtual function to add effect cards
+    protected:
+        vector<PlayingCard*> deck; // Vector to hold PlayingCard objects
+    public:
+        vector<PlayingCard*> getDeck() 
+        {
+            return this->deck;
+        };
+
+        //VIRTUAL FUNCTIONS IMPLEMENTED
+        int getCurrentCards() override
+        {
+            return this->deck.size();
+        };
+
+        void discardCard(int idx) override
+        {
+            this->deck.erase(this->deck.begin() + idx);
+        };
+
+        void sortInSuits() // Sort the deck based on the suits
+        {
+            std::sort(deck.begin(), deck.end(),
+            [](PlayingCard* a, PlayingCard* b) {
+                return a->get_suit() < b->get_suit();
+            });
+        };
+
+        void sortInRanks() // Sort the deck based on the ranks
+        {
+            std::sort(deck.begin(), deck.end(), 
+            [](PlayingCard* a, PlayingCard* b) {
+                return a->get_chips() < b->get_chips();
+            });
+        };
 };
 
-#endif // ABSTRACT_EFFECTS_DECK_H
+#endif //ABSTRACT_PLAYING_DECK_H
 
