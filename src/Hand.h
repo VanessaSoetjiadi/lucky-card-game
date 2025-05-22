@@ -38,9 +38,9 @@ class Hand {
 
       for (const auto& card : playDeck.getDeck()) {
         if (card->get_chosen() == true) {
-            rankCount[card->get_rank()]++;
-            suitCount[card->get_suit()]++;
-            rankValues.push_back(card->get_chips());
+          rankCount[card->get_rank()]++;
+          suitCount[card->get_suit()]++;
+          rankValues.push_back(card->get_chips());
         }
       }
 
@@ -196,13 +196,10 @@ class Hand {
       // getting total bonuses from the support deck
       for (int i = spDeck.getCurrentCards() - 1; i >= 0; i--) 
       {
-        if (spDeck.getDeck()[i]->get_isUsed()) 
+        if (spDeck.getDeck()[i]->get_isUsed() == true) 
         {
           this->totalChips += spDeck.getDeck()[i]->get_bonus_chips();
           this->totalMults += spDeck.getDeck()[i]->get_bonus_mults();
-
-          // setting the card as already used
-          spDeck.getDeck()[i]->set_Used();
         };
       };
     };
@@ -219,60 +216,75 @@ class Hand {
       calculateChips(playDeck);
       calculateEffectsCards(jkDeck, spDeck);
 
+      discardPlayingCards(playDeck);
+      autoRemoveEffectsCards(jkDeck, spDeck);
+
       this->totalScore = this->totalChips*this->totalMults;
+
+      handsCount--;
     };
 
-    void discardPlayingCards(string index, PlayingDeck& playDeck) 
+    void discardPlayingCards(PlayingDeck& playDeck) 
     {
-      // sort decreasing from the left, so that elements from the vectors are removed safely
-      std::sort(index.begin(), index.end(), std::greater<char>());
-      for (int i = 0; i < index.length(); i++) 
+      for (int i = playDeck.getCurrentCards() - 1; i >= 0; i--) 
       {
-        if (playDeck.getDeck()[index[i] - '0']->get_chosen() == true) 
+        if (playDeck.getDeck()[i]->get_chosen() == true) 
         {
-          playDeck.discardCard(index[i] - '0'); 
+          playDeck.discardCard(i);
         };
       };
     };
 
-    void discardEffectsCards(JokerDeck& jkDeck, SupportDeck& spDeck)
+    void discardEffectsCards(string index, AbstractEffectsDeck& effectsDeck) 
     {
-      string idx; // indexes are stored safely in string first, before being removed entirely to avoid accessing the wrong memory.
+      std::sort(index.begin(), index.end(), std::greater<char>()); // sorting decreasing
+      for (int i = 0; i < index.length(); i++) 
+      {
+        effectsDeck.discardCard(i);
+      };
+    };
+
+    void autoRemoveEffectsCards(JokerDeck& jkDeck, SupportDeck& spDeck)
+    {
+      vector<int> idx;
 
       // checking the joker deck
       for (int i = 0; i < jkDeck.getCurrentCards(); i++) 
       {
         if (jkDeck.getDeck()[i]->get_lifespan() < 1) 
         {
-          idx.append(to_string(i));
+          idx.push_back(i);
         };
       };
 
       // sorting decreasing
-      std::sort(idx.begin(), idx.end(), std::greater<char>());
+      std::sort(idx.begin(), idx.end(), std::greater<int>());
 
       // removing the cards from the joker deck
-      for (int i = 0; i < idx.length(); i++) 
+      for (int i = 0; i < idx.size(); i++) 
       {
-        jkDeck.discardCard(idx[i] - '0');
+        jkDeck.discardCard(idx[i]);
       };
+
+      // resetting the vector to 0 for the support card deck
+      idx.clear();
 
       // checking the support deck
       for (int i = 0; i < spDeck.getCurrentCards(); i++) 
       {
-        if (spDeck.getDeck()[i]->get_isUsed() < 1) 
+        if (spDeck.getDeck()[i]->get_isUsed() == true) 
         {
-          idx.append(to_string(i));
+          idx.push_back(i);
         };
       };
 
       // sorting decreasing
-      std::sort(idx.begin(), idx.end(), std::greater<char>());
+      std::sort(idx.begin(), idx.end(), std::greater<int>());
 
       // removing the cards from the support deck
-      for (int i = 0; i < idx.length(); i++) 
+      for (int i = 0; i < idx.size(); i++) 
       {
-        spDeck.discardCard(idx[i] - '0');
+        spDeck.discardCard(idx[i]);
       };
     };
 
@@ -281,9 +293,12 @@ class Hand {
     {
       for (int i = 0; i < playDeck.getCurrentCards(); i++) 
       {
-        if (playDeck.getDeck()[i]->get_chosen()) 
+        if (playDeck.getDeck()[i]->get_chosen() == true) 
         {
-          if (playDeck.getDeck()[i]->get_color().compare(CardColor[1]) == 0) this->handsCount++;
+          if (playDeck.getDeck()[i]->get_color().compare(CardColor[1]) == 0) {
+            cout << playDeck.getDeck()[i]->get_suit() << playDeck.getDeck()[i]->get_rank() << " was a black card | Hand is added" << endl;
+            this->handsCount++;
+          };
         };
       };
     };

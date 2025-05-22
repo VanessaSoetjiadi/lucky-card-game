@@ -22,12 +22,7 @@ class Game {
       JokerDeck jkDeck;
       SupportDeck spDeck;
 
-      while(lose_status == false) 
-      {
-        round++;
-        cout << "Round: " << round << endl;
-        runGame(jkDeck, spDeck);
-      };
+      runGame(jkDeck, spDeck);
     };
 
     void runGame(JokerDeck jkDeck, SupportDeck spDeck) {
