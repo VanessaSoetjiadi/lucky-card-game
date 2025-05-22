@@ -341,6 +341,6 @@ class UnitTest {
         cout << playDeck.getDeck()[i]->get_suit() << " " << playDeck.getDeck()[i]->get_rank() << endl;
       };
     };
-};
+};      
 
 #endif //UNITTEST_H
