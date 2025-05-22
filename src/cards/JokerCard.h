@@ -18,16 +18,16 @@ class JokerCard : public EffectCard {
       switch (rnd) 
       {
         case 0: //COMMON
-          bonusChips = (rand() % 10) + 1;
-          bonusMults = (rand() % 10) + 1;
+          bonusChips = (rand() % 4) + 1;
+          bonusMults = (rand() % 4) + 1;
           break;
         case 1: //RARE
-          bonusChips = (rand() % 30) + 1;
-          bonusMults = (rand() % 30) + 1;
+          bonusChips = (rand() % 8) + 1;
+          bonusMults = (rand() % 8) + 1;
           break;
         case 2: //SUPER RARE
-          bonusChips = (rand() % 50) + 1;
-          bonusMults = (rand() % 50) + 1;
+          bonusChips = (rand() % 15) + 1;
+          bonusMults = (rand() % 15) + 1;
           break;
       };
 

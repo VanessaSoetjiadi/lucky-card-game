@@ -15,7 +15,7 @@ class JokerDeck : public AbstractEffectsDeck {
       for (int i = 0; i < 2; i++) 
       {
         //Random number for the lifespan (max 4 rounds)
-        int rnd = (rand() % 4);
+        int rnd = (rand() % 4) + 1;
         this->deck.push_back(new JokerCard(rnd));
       }
     };
@@ -47,6 +47,8 @@ class JokerDeck : public AbstractEffectsDeck {
     {
       return this->deck;
     };
+
+    
     
     ~JokerDeck() {
       //deck.clear(); // Clear the vector of Joker cards

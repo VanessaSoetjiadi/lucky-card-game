@@ -19,12 +19,57 @@ class Game {
   public:
     Game(): round(0), lose_status(false), minimumScore(100)
     {
-      
+      JokerDeck jkDeck;
+      SupportDeck spDeck;
+
+      while(lose_status == false) 
+      {
+        round++;
+        cout << "Round: " << round << endl;
+        runGame(jkDeck, spDeck);
+      };
     };
 
-    void runGame() 
-    {
-      
+    void runGame(JokerDeck jkDeck, SupportDeck spDeck) {
+      Hand hand;
+
+      InitDeck initialDeck;
+      initialDeck.makeDeck();
+
+      PlayingDeck playDeck;
+      playDeck.makeDeck(initialDeck);
+
+      string inpt = 0;
+      while(hand.get_handsCount() > 0 && hand.get_totalScore() < minimumScore) 
+      {
+        cout << "Your deck: " << endl;
+        
+        // display playingCards
+        cout << "[";
+        for (int i = 0; i < playDeck.getCurrentCards(); i++) 
+        {
+          cout << playDeck.getDeck()[i]->get_suit() << " " << playDeck.getDeck()[i]->get_rank() << endl;
+        };
+        cout << "]" << endl;
+
+        // display jokerDeck information
+        for (int i = 0; i < jkDeck.getCurrentCards(); i++) 
+        {
+          cout << "Joker " << i << "bonus chips:" << jkDeck.getDeck()[i]->get_bonus_chips();
+        };
+
+        cout << "input the index of the cards you want to play:" << endl;
+        cin >> inpt;
+
+        // for (int i = 0; i < inpt.length(); i++) 
+        // {
+        //   playDeck.getDeck()[stoi(inpt[i])]->get_chosen();
+        // };
+        
+        hand.calculateTotalScore(playDeck, jkDeck, spDeck);
+      };
+
+
     };
 
     void renderAll() 

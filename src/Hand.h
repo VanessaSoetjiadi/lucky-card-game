@@ -8,8 +8,6 @@
 #include "decks/JokerDeck.h"
 #include "decks/SupportDeck.h"
 
-const string Hands[] {"High Card", "Royal Flush", "Straight Flush", "Flush", "Four of a Kind", "Full House", "Straight", "Three of a Kind", "Two Pair", "Pair"};
-
 class Hand {
   private:
     int maximumNumCards;
@@ -21,15 +19,13 @@ class Hand {
   public:
     Hand(): maximumNumCards(5), totalChips(0), totalMults(0), totalScore(0),handsCount(4), discardsCount(4) {};
 
-    //NOTE: For most of the calculating functions, we'll be iterating backwards since we're checking and deleting in one go.
     void calculateChips (PlayingDeck& playDeck) 
     {
-      for (int i = playDeck.getCurrentCards() - 1; i >= 0; i--) 
+      for (int i = 0; i < playDeck.getCurrentCards(); i++) 
       {
-        if (playDeck.getDeck()[i]->get_chosen()) 
+        if (playDeck.getDeck()[i]->get_chosen() == true) 
         {
           this->totalChips += playDeck.getDeck()[i]->get_chips();
-          playDeck.discardCard(i);
         };
       };
     };
@@ -38,25 +34,26 @@ class Hand {
     {
       map<string, int> rankCount;
       map<string, int> suitCount;
+      vector<int> rankValues;
 
       for (const auto& card : playDeck.getDeck()) {
-        //only add if it's chosen
-        if (card->get_chosen()) 
-        {
-          rankCount[card->get_rank()]++; // Increment count for this rank
-          suitCount[card->get_suit()]++; // Increment count for this suit
-        };
-      };
-
-      //CHECKER (DELETE LATER)
-      for (const auto& pair : rankCount) {
-        std::cout << "Rank: " << pair.first << ", Count: " << pair.second << std::endl;
+        if (card->get_chosen() == true) {
+            rankCount[card->get_rank()]++;
+            suitCount[card->get_suit()]++;
+            rankValues.push_back(card->get_chips());
+        }
       }
 
-      for (const auto& suitEntry : suitCount) {
-        std::cout << "Suit: " << suitEntry.first 
-        << ", Count: " << suitEntry.second << std::endl;
-      }
+
+      // //CHECKER (DELETE LATER)
+      // for (const auto& pair : rankCount) {
+      //   std::cout << "Rank: " << pair.first << ", Count: " << pair.second << std::endl;
+      // }
+
+      // for (const auto& suitEntry : suitCount) {
+      //   std::cout << "Suit: " << suitEntry.first 
+      //   << ", Count: " << suitEntry.second << std::endl;
+      // }
 
       bool isFlush = false;
       for (const auto& entry : suitCount) {
@@ -67,7 +64,6 @@ class Hand {
       };
 
       bool isStraight = false;
-      vector<int> rankValues;
       for (const auto& card : playDeck.getDeck()) {
         rankValues.push_back(card->get_chips());
       }
@@ -139,7 +135,7 @@ class Hand {
       return rankValues.back();
     };
 
-    //DETERMINE BONUS MULTS, CHIPS FROM CheckHandType function
+    // determining the bonus chips and mults obtained from the hand type
     void calculatePlayingCardsPoints(int hands) 
     {
       switch(hands) 
@@ -186,24 +182,18 @@ class Hand {
       };
     };
 
-    //CALCULATING THE TOTAL BONUS EFFECTS RECEIVED
+    // calculating the total bonus effects received from the effects cards
     void calculateEffectsCards(JokerDeck& jkDeck, SupportDeck& spDeck) 
     {
-      //Getting the total bonuses from the jokerDeck
-      for (int i = jkDeck.getCurrentCards() - 1; i >= 0; i--) 
+      // getting total bonuses from joker deck
+      for (int i = 0; i < jkDeck.getCurrentCards(); i++) 
       {
         this->totalChips += jkDeck.getDeck()[i]->get_bonus_chips();
         this->totalMults += jkDeck.getDeck()[i]->get_bonus_mults();
         jkDeck.getDeck()[i]->subtract_lifespan();
-
-        //Deleting the jokerCard if it's lifespan is 0
-        if (jkDeck.getDeck()[i]->get_lifespan() < 1) 
-        {
-          jkDeck.discardCard(i);
-        };
       };
 
-      //Getting the total bonuses from the supportDeck
+      // getting total bonuses from the support deck
       for (int i = spDeck.getCurrentCards() - 1; i >= 0; i--) 
       {
         if (spDeck.getDeck()[i]->get_isUsed()) 
@@ -211,24 +201,79 @@ class Hand {
           this->totalChips += spDeck.getDeck()[i]->get_bonus_chips();
           this->totalMults += spDeck.getDeck()[i]->get_bonus_mults();
 
-          //Deleting the support card since it's been used
-          spDeck.discardCard(i);
+          // setting the card as already used
+          spDeck.getDeck()[i]->set_Used();
         };
       };
     };
 
-    //WHEN HAND BUTTON IS PRESSED
+    // when the hand button is pressed
     void calculateTotalScore(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) 
     {
       add_handsCount(playDeck);
       add_discardsCount(playDeck);
 
-      calculatePlayingCardsPoints(checkHandType(playDeck));
+      // cout << checkHandType(playDeck) << endl;
+      // calculatePlayingCardsPoints(checkHandType(playDeck));
 
       calculateChips(playDeck);
       calculateEffectsCards(jkDeck, spDeck);
 
       this->totalScore = this->totalChips*this->totalMults;
+    };
+
+    void discardPlayingCards(string index, PlayingDeck& playDeck) 
+    {
+      // sort decreasing from the left, so that elements from the vectors are removed safely
+      std::sort(index.begin(), index.end(), std::greater<char>());
+      for (int i = 0; i < index.length(); i++) 
+      {
+        if (playDeck.getDeck()[index[i] - '0']->get_chosen() == true) 
+        {
+          playDeck.discardCard(index[i] - '0'); 
+        };
+      };
+    };
+
+    void discardEffectsCards(JokerDeck& jkDeck, SupportDeck& spDeck)
+    {
+      string idx; // indexes are stored safely in string first, before being removed entirely to avoid accessing the wrong memory.
+
+      // checking the joker deck
+      for (int i = 0; i < jkDeck.getCurrentCards(); i++) 
+      {
+        if (jkDeck.getDeck()[i]->get_lifespan() < 1) 
+        {
+          idx.append(to_string(i));
+        };
+      };
+
+      // sorting decreasing
+      std::sort(idx.begin(), idx.end(), std::greater<char>());
+
+      // removing the cards from the joker deck
+      for (int i = 0; i < idx.length(); i++) 
+      {
+        jkDeck.discardCard(idx[i] - '0');
+      };
+
+      // checking the support deck
+      for (int i = 0; i < spDeck.getCurrentCards(); i++) 
+      {
+        if (spDeck.getDeck()[i]->get_isUsed() < 1) 
+        {
+          idx.append(to_string(i));
+        };
+      };
+
+      // sorting decreasing
+      std::sort(idx.begin(), idx.end(), std::greater<char>());
+
+      // removing the cards from the support deck
+      for (int i = 0; i < idx.length(); i++) 
+      {
+        spDeck.discardCard(idx[i] - '0');
+      };
     };
 
     //SETTERS
@@ -252,6 +297,16 @@ class Hand {
           if (playDeck.getDeck()[i]->get_color().compare(CardColor[2]) == 0) this->discardsCount++;
         };
       };
+    };
+
+    void subtract_handsCount() 
+    {
+      handsCount--;
+    };
+
+    void subtract_discardsCount() 
+    {
+      discardsCount--;
     };
 
     //GETTERS
