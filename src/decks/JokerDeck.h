@@ -2,56 +2,54 @@
 #define JOKERDECK_H
 
 #include "AbstractEffectsDeck.h"
-#include "JokerCard.h"
+#include "../cards/JokerCard.h"
 
-class JokerDeck : public Deck {
+class JokerDeck : public AbstractEffectsDeck {
   private:
-    vector<unique_ptr<JokerCard>> deck; // Vector to hold Joker cards
+    vector<JokerCard*> deck; // Vector to hold Joker cards
   public:
-    //CONSTRUCTOR
     JokerDeck() {
-      // Initialize the deck with Joker cards
-      for (int i = 0; i < 4; i++) { // Assuming 4 Jokers
-        deck.push_back(make_unique<JokerCard>(5, 50, 2)); // Example lifespan, chips, and mults
-      }
-    };
-    //MAKEDECK JOKER
-    void makeDeck() override {
-      // This function can be used to initialize or reset the Joker deck if needed
-      deck.clear(); // Clear the existing deck
-      for (int i = 0; i < 4; i++) { // Assuming 4 Jokers
-        deck.push_back(make_unique<JokerCard>(5, 50, 2)); // Example lifespan, chips, and mults
+      this->set_maximumNumCards(4);
+
+      //Initialize the deck with 2 Joker cards
+      for (int i = 0; i < 2; i++) 
+      {
+        //Random number for the lifespan (max 4 rounds)
+        int rnd = (rand() % 4);
+        this->deck.push_back(new JokerCard(rnd));
       }
     };
     
-    //DISCARD CARD (ERASE FROM DECK) COPY FROM HAND
-    unique_ptr<JokerCard> discardCard(int index) {
-      if (index < 0 || index >= deck.size()) {
-        return nullptr; 
-      }
-      unique_ptr<JokerCard> removed = std::move(deck[index]); // Move the card at the specified index to a unique_ptr
-      deck.erase(deck.begin() + index); // Remove the card from the deck at the specified index
-      return std::move(removed); // Return the removed joker card
+    //PURE VIRTUAL FUNCTIONS OVERRIDE
+    //FROM DECK
+    void discardCard(int idx) override
+    {
+      this->deck.erase(this->deck.begin() + idx);
     };
     
-    //GET CURRENT CARDS (USEFUL FOR DISCARD CARD)
-    vector<unique_ptr<JokerCard>>& getDeck() {
-      return deck; // Joker Deck
-    };
-    
-    //GETTERS
-    int getCurrentCards() {
-      return deck.size(); // Joker Deck size
+    int getCurrentCards() override
+    {
+      return this->deck.size();
     };
 
-    //SETTERS
-    void addJokerCard(int lifespan, int bonus_chips, int bonus_mults) {
-      deck.push_back(make_unique<JokerCard>(lifespan, bonus_chips, bonus_mults)); // Add new Joker card to the deck
+    //FROM ABSTRACTEFFECTSDECK
+    void addEffectCard() override
+    {
+      //Only add if deck is not full
+      if (this->getCurrentCards() < this->get_maximumNumCards()) {
+        // Add new Joker card to the deck
+        int rnd = ((rand() % 4) - 1);
+        this->deck.push_back(new JokerCard(rnd));
+      };
+    };
+
+    vector<JokerCard*> getDeck() 
+    {
+      return this->deck;
     };
     
-    //DESTRUCTOR
     ~JokerDeck() {
-      deck.clear(); // Clear the vector of Joker cards
+      //deck.clear(); // Clear the vector of Joker cards
     };
 
 };

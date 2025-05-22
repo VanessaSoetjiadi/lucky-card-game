@@ -1,7 +1,12 @@
 #include "Game.h"
+#include "UnitTest.h"
 
-int main () {
+int main()
+{
   Game game;
-  game.runGame();
+  UnitTest unitTest;
+  
+  unitTest.testAll();
+
   return 0;
-};
+}
