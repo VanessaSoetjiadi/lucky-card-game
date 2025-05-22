@@ -59,6 +59,7 @@
     "algorithm": "cpp",
     "__hash_table": "cpp",
     "__tree": "cpp",
-    "map": "cpp"
+    "map": "cpp",
+    "random": "cpp"
   }
 }
