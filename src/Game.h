@@ -19,21 +19,49 @@ class Game {
     bool lose_status;
     vector<int> highscores;
   public:
-    Game(): round(0), minimumScore(100)
+    Game(): round(0), minimumScore(100), difficulty(1)
     {
+      // declared outside the switch so that it exists even if 
       JokerDeck jkDeck;
       SupportDeck spDeck;
 
-      runGame(jkDeck, spDeck);
+      int n = 0; // get user input on what they wanna do
+
+      while(n < 3) 
+      {
+        cout << "Please select one of the following:\n1. Play\n2. Check highscore\n3. Quit the game\n";
+        cout << "Answer: ";
+        cin >> n;
+        cout << "\n";
+
+        switch(n) 
+        {
+          case 1:
+            // resets the joker, support deck for new games
+            jkDeck.makeDeck();
+            spDeck.makeDeck();
+
+            // runs the game
+            runGame(jkDeck, spDeck);
+            break;
+          case 2:
+            // insert logic for highscore leaderboard show
+            break;
+          default:
+            break;
+        };
+      };
     };
 
-    void runGame(JokerDeck jkDeck, SupportDeck spDeck) {
+    void runGame(JokerDeck jkDeck, SupportDeck spDeck) { // game loop
       lose_status = false;
 
       while (lose_status == false) {
         round++;
 
         int d = 0; //placeholder for input difficulty
+
+        cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
         while (d < 1 || d > 3) { // inputting the difficulty level
           cout << "Please select difficulty: 1, 2, 3\n";
@@ -87,25 +115,30 @@ class Game {
           hand.set_totalChips(0);
           hand.set_totalMults(0);
 
-          // printing the decks on the terminal, and others (hand & discard counts)
-          cout << "-----------------------------------------------------------" << endl;
+          cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
+
+          // printing the all of the decks on terminal
           print_playingDeck(playDeck);
+          cout << "->";
           print_jokerDeck(jkDeck);
+          cout << "->";
           print_supportDeck(spDeck);
 
           cout << "Hands count: " << hand.get_handsCount() << " | " << "Discards count: " << hand.get_discardsCount() << "\n\n";
 
           // both are reset every iteration/round
-          int n = 0, m = 0; // n is for the option, m is for the deck
+          int n = 0, m = 0, x = 0; // n is for the option, m is for the deck, x is for the sorting
           string idx = ""; // user input for the chosen indexes
+          bool allChosen = true; // checks whether or not all the support cards is being used
 
-          while(n < 1 || n > 2) // input validation for the options
+          while(n < 1 || n > 3) // input validation for the options
           {
             cout << "Please select one of the following:\n1. Play/use cards\n";
             if (jkDeck.getCurrentCards() > 0 || spDeck.getCurrentCards() > 0 || hand.get_discardsCount() > 0) 
             {
               cout << "2. Discard cards\n"; // available only if there are cards to be discarded
             };
+            cout << "3. Sort cards\n";
             cout << "Answer: ";
             cin >> n;
             cout << "\n";
@@ -135,10 +168,24 @@ class Game {
                   hand.calculateTotalScore(playDeck, jkDeck, spDeck);
                   break;
                 case 2:
-                  cout << "Please input the indexes of the support cards that you wanna use: ";
-                  cin >> idx;
-                  indexValidator(idx, spDeck, 2);
-                  pickSupportCards(idx, spDeck);
+                  for (int i = 0; i < spDeck.getCurrentCards(); i++) 
+                  {
+                    if (spDeck.getDeck()[i]->get_isUsed() == false) 
+                    {
+                      allChosen = false;
+                      break;
+                    };
+                  };
+
+                  if (allChosen == true) 
+                  {
+                    cout << "You're already using all of your support cards!\n";
+                  } else {
+                    cout << "Please input the indexes of the support cards that you wanna use: ";
+                    cin >> idx;
+                    indexValidator(idx, spDeck, 2);
+                    pickSupportCards(idx, spDeck);
+                  };
                   break;
                 default:
                   break;
@@ -188,16 +235,36 @@ class Game {
                   break;
               };
               break;
+            case 3: // sorting the playing cards
+              cout << "Sort by:\n1. Suits\n2. Ranks\n";
+              cout << "Answer: ";
+              cin >> x;
+              switch(x) 
+              {
+                case 1:
+                  playDeck.sortInSuits();
+                  break;
+                case 2:
+                  playDeck.sortInRanks();
+                  break;
+                default:
+                  break;
+              };
+              break;
             default:
               break;
           };
       
-          cout << "Your score: " << hand.get_totalScore() << " | " << "Score needed: " << minimumScore << "\n\n";          
+          if (n == 1 && m == 1) // user plays the playing cards, which means score would change
+          {
+            cout << "Your score: " << hand.get_totalScore() << " | " << "Score needed: " << minimumScore << "\n";     
+          };     
         };
 
         if (hand.get_handsCount() < 1 && hand.get_totalScore() < minimumScore) 
         {
           cout << "You Lost." << "\n";
+          //highscores.push_back(hand.get_totalScore()); // push the high score?
           lose_status = true;
         } else {
           cout << "You Win!" << "\n\n";
@@ -210,17 +277,7 @@ class Game {
       
     };
 
-    //SETTERS
-    void set_difficulty(int inpt) 
-    {
-      this->difficulty = inpt;
-    };
-    
-    //GETTERS
-    int get_difficulty() {
-      return this->difficulty;
-    };
-
+    // printers for terminal based prototype
     void print_playingDeck(PlayingDeck& playDeck) {
       cout << "[ ";
       for (int i = 0; i < playDeck.getCurrentCards(); i++) 
@@ -295,9 +352,15 @@ class Game {
           int idx = index[i] - '0';
           if (idx < 0 || idx >= currentCards) 
           {
-            cout << "Please pick an index **within the deck's range (0-" << (currentCards - 1) << "): ";
+            if (currentCards > 1) 
+            {
+              cout << "Please pick an index **within the deck's range (0-" << (currentCards - 1) << "): ";
+            } else {
+              cout << "The only index that can be chosen is 0: ";
+            };
             cin >> index;
             isValid = false;
+            cout << "\n";
             break;
           }
 
@@ -306,6 +369,7 @@ class Game {
             cout << "Duplicate index (" << index[i] << "). Pick unique indices: ";
             cin >> index;
             isValid = false;
+            cout << "\n";
             break;
           }
         };
@@ -327,9 +391,26 @@ class Game {
     {
       for (int i = 0; i < index.length(); i++) 
       {
-        spDeck.getDeck()[index[i] - '0']->set_Used();
-        cout << "Support" << spDeck.getDeck()[i]->get_rarity() << " will be used next hand played.";
+        if (spDeck.getDeck()[index[i] - '0']->get_isUsed() == true) 
+        {
+          cout << "Support" << spDeck.getDeck()[i]->get_rarity() << " is already chosen to be used next hand played.\n";
+        } else {
+          spDeck.getDeck()[index[i] - '0']->set_Used();
+          cout << "Support" << spDeck.getDeck()[i]->get_rarity() << " will be used next hand played.\n";
+        };
       };
+    };
+
+
+    //SETTERS
+    void set_difficulty(int inpt) 
+    {
+      this->difficulty = inpt;
+    };
+    
+    //GETTERS
+    int get_difficulty() {
+      return this->difficulty;
     };
 
     ~Game() {};
