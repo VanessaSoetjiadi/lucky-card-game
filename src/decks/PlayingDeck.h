@@ -12,7 +12,7 @@ class PlayingDeck : public AbstractPlayingDeck {
       this->set_maximumNumCards(8);
     };
 
-    //MAKING THE 8 CARDS PLAYING DECK
+    // taking 8 cards from the initial deck
     void makeDeck(InitDeck& initialDeck) 
     {
       while(this->getCurrentCards() < this->get_maximumNumCards())
