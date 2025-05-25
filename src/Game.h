@@ -18,40 +18,141 @@ class Game {
     int difficulty;
     bool lose_status;
     vector<int> highscores;
+    sf::RenderWindow window;
+    // load font from file
+    sf::Font font;
   public:
-    Game(): round(0), minimumScore(100), difficulty(1)
+    // constructor
+    Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
     {
       // declared outside the switch so that it exists even if 
       JokerDeck jkDeck;
       SupportDeck spDeck;
 
-      int n = 0; // get user input on what they wanna do
+      // window setup
+      window.setSize({800,600});
+      window.setTitle("Lucky Card Game");
+      if (!font.loadFromFile("assets/DejaVuSans.ttf")) {
+        std::cerr << "Failed to load font\n";
+      }
+      
+      // allow user to choose an action, and perform the action using a switch statement
+      std::string strings[3] = {"Play","Leaderboard","Exit"};
+      std::string title = "Lucky Card Game";
+      sf::Color colours[3] = {sf::Color::Green,sf::Color::Yellow,sf::Color::Red};
+      int choice = getChoice(title,3,strings,colours);
+      switch(choice) {
+        case 0:
+          // resets the joker, support deck for new games
+          jkDeck.makeDeck();
+          spDeck.makeDeck();
 
-      while(n < 3) 
-      {
-        cout << "Please select one of the following:\n1. Play\n2. Check highscore\n3. Quit the game\n";
-        cout << "Answer: ";
-        cin >> n;
-        cout << "\n";
-
-        switch(n) 
-        {
-          case 1:
-            // resets the joker, support deck for new games
-            jkDeck.makeDeck();
-            spDeck.makeDeck();
-
-            // runs the game
-            runGame(jkDeck, spDeck);
-            break;
-          case 2:
-            // insert logic for highscore leaderboard show
-            break;
-          default:
-            break;
-        };
-      };
+          // runs the game
+          run(jkDeck, spDeck);
+          break;
+        case 1:
+          window.close();
+          std::cout << "Leaderboard not yet implemented." << std::endl;
+          break;
+        default:
+          window.close();
+          break;
+      }
     };
+
+    // user chooses what they would like to do
+    int getChoice(std::string title_string,int num_options,std::string strings[],sf::Color colours[]) {
+      // create graphics for menu buttons
+      int b_width = 200;
+      int b_height = 30;
+      std::vector<sf::RectangleShape> menu_buttons;
+      std::vector<sf::Text> menu_texts;
+      for (int i = 0; i < num_options; i++) {
+          sf::RectangleShape rect;
+          menu_buttons.push_back(rect);
+          menu_buttons[i].setSize({b_width, b_height});
+          menu_buttons[i].setFillColor(colours[i]);
+          menu_buttons[i].setPosition(window.getSize().x/2 - b_width/2, window.getSize().y/2 - 2.5*b_height + 2*i*b_height);
+
+          sf::Text text;
+          menu_texts.push_back(text);
+          menu_texts[i].setFillColor(sf::Color::Black);
+          menu_texts[i].setString(strings[i]);
+          menu_texts[i].setPosition(window.getSize().x/2 - b_width/2, window.getSize().y/2 - 2.5*b_height + 2*i*b_height);
+          menu_texts[i].setFont(font);
+          menu_texts[i].setCharacterSize(20);
+      }
+
+      sf::Text title;
+      title.setFont(font);
+      title.setCharacterSize(30);
+      title.setString(title_string);
+      title.setFillColor(sf::Color::White);
+      int t_height = title.getGlobalBounds().height;
+      int t_width = title.getGlobalBounds().width;
+      title.setPosition(window.getSize().x/2 - t_width/2, window.getSize().y/2 - 3.5*b_height - t_height);
+
+      // loop to detect inputs and draw menu
+      while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+                }
+            if (event.type == sf::Event::MouseButtonPressed) {
+
+                // then check for each card in hand
+                for (int i = 0; i < 3; i++) {
+                    int left = menu_buttons[i].getPosition().x;
+                    int right = left + menu_buttons[i].getSize().x;
+                    int top = menu_buttons[i].getPosition().y;
+                    int bottom = top + menu_buttons[i].getSize().y;
+                    int x = event.mouseButton.x;
+                    int y = event.mouseButton.y;
+
+                    // when this if statement is true, it means that the button at index i was pressed;
+                    if ((left <= x && x <= right) && (top <= y && y <= bottom)) {
+                        return i;
+                    }
+                }
+            }
+        }
+
+        // draw menu
+        window.clear(sf::Color::Black);
+        for (int i = 0; i < 3; i++) {
+            window.draw(menu_buttons[i]);
+            window.draw(menu_texts[i]);
+        }
+        window.draw(title);
+        window.display();
+      }
+};
+
+    // temporary function 'run()' to replace 'runGame()' during sfml development
+    void run(JokerDeck jkDeck, SupportDeck spDeck) {
+      // main gameplay loop
+      while (window.isOpen()) {
+        lose_status = false;
+        while (lose_status == false) {
+          round++;
+
+          // get input for difficulty
+          std::string diff_strings[3] = {"Easy","Medium","Difficult"};
+          sf::Color diff_colours[3] = {sf::Color::White,sf::Color::White,sf::Color::White};
+          int d = getChoice("Select Difficulty",3,diff_strings,diff_colours);
+        
+        sf::Event event;
+        while (window.pollEvent(event)) {
+          if (event.type == sf::Event::Closed) {
+            window.close();
+            }
+        }
+      window.clear(sf::Color::Black);
+      window.display();
+      }
+    }
+  }
 
     void runGame(JokerDeck jkDeck, SupportDeck spDeck) { // game loop
       lose_status = false;
@@ -272,11 +373,6 @@ class Game {
       };
     };
 
-    void renderAll() 
-    {
-      
-    };
-
     // printers for terminal based prototype
     void print_playingDeck(PlayingDeck& playDeck) {
       cout << "[ ";
@@ -411,7 +507,13 @@ class Game {
     //GETTERS
     int get_difficulty() {
       return this->difficulty;
-    };
+    }; 
+
+    sf::RenderWindow& getWindow() {
+      // the RenderWindow class is non-copyable, so it is impossible to return directly,
+      // therefore we set the return type as an address in the function definition
+      return window;
+    }
 
     ~Game() {};
 };
