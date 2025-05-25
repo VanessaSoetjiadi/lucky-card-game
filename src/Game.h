@@ -130,6 +130,8 @@ class Game {
             window.close();
             }
         }
+      window.clear(sf::Color::Black);
+      window.display();
       }
     }
 
