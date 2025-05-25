@@ -18,12 +18,19 @@ class Game {
     int difficulty;
     bool lose_status;
     vector<int> highscores;
+    sf::RenderWindow window;
   public:
-    Game(): round(0), minimumScore(100), difficulty(1)
+    // constructor
+    Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
     {
       // declared outside the switch so that it exists even if 
       JokerDeck jkDeck;
       SupportDeck spDeck;
+
+      // window setup
+      window.setSize({800,600});
+      window.setTitle("Lucky Card Game");
+      
 
       int n = 0; // get user input on what they wanna do
 
@@ -42,7 +49,7 @@ class Game {
             spDeck.makeDeck();
 
             // runs the game
-            runGame(jkDeck, spDeck);
+            run(jkDeck, spDeck);
             break;
           case 2:
             // insert logic for highscore leaderboard show
@@ -52,6 +59,19 @@ class Game {
         };
       };
     };
+
+    // temporary function 'run()' to replace 'runGame()' during sfml development
+    void run(JokerDeck jkDeck, SupportDeck spDeck) {
+      while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+          if (event.type == sf::Event::Closed) {
+            // text pop up confirmation
+            window.close();
+            }
+        }
+      }
+    }
 
     void runGame(JokerDeck jkDeck, SupportDeck spDeck) { // game loop
       lose_status = false;
@@ -272,11 +292,6 @@ class Game {
       };
     };
 
-    void renderAll() 
-    {
-      
-    };
-
     // printers for terminal based prototype
     void print_playingDeck(PlayingDeck& playDeck) {
       cout << "[ ";
@@ -411,7 +426,13 @@ class Game {
     //GETTERS
     int get_difficulty() {
       return this->difficulty;
-    };
+    }; 
+
+    sf::RenderWindow& getWindow() {
+      // the RenderWindow class is non-copyable, so it is impossible to return directly,
+      // therefore we set the return type as an address in the function definition
+      return window;
+    }
 
     ~Game() {};
 };
