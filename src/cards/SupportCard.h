@@ -11,6 +11,7 @@ class SupportCard : public EffectCard {
     {
       int rnd = randomizer();
       this->rarity = Rarity[rnd];
+      texture.loadFromFile("assets/cards/" + rarity + ".png");
 
       int bonusChips = 0; 
       int bonusMults = 0;
@@ -35,10 +36,8 @@ class SupportCard : public EffectCard {
       set_bonus_mults(bonusMults);
     };
 
-    // pure virtual functions override
-    sf::Texture& draw() override
-    {
-      
+    std::string describe() {
+      std::string description = this->rarity + "\n" + std::to_string(this->bonus_chips) + " Chips\n" + std::to_string(this->bonus_mults) + " Mults";
     };
 
     int randomizer() override 

@@ -12,6 +12,27 @@ class EffectCard : public Card {
     int bonus_mults; // multipliers, multiplies the chips to get total score
     int bonus_chips;
   public:
+
+    // pure virtual functions override
+    sf::Texture& draw() override
+    {
+      return this->texture;
+    };
+
+    virtual std::string describe() = 0;
+
+    // generate a text object using the description from describe(), which varies by card type
+    sf::Text get_description(int x, int y, sf::Font font) {
+      sf::Text desc;
+      desc.setFont(font);
+      desc.setFillColor(sf::Color::White);
+      desc.setCharacterSize(10);
+      desc.setPosition(x,y);
+      // desc.setString(this->describe());
+      desc.setString("abc");
+      return desc;
+    }
+    
     //SETTERS
     void set_bonus_mults(int n) 
     {

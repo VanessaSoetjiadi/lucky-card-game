@@ -15,7 +15,6 @@ class PlayingCard : public Card {
     string suit;
     string rank;
     bool chosen; // if user picked the card or not
-    sf::Texture texture;
   public:
     PlayingCard(string suit, string rank): suit(suit), rank(rank) 
     {
