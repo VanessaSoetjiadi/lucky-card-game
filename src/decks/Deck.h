@@ -1,17 +1,20 @@
 #ifndef DECK_H
 #define DECK_H
 
+//VECTOR LIB
 #include <vector>
 
 class Deck {
   protected:
     int maximumNumCards;
   public:
-    virtual void discardCard(int idx) = 0; // discards the card in index
-    virtual int getCurrentCards() = 0; // returns the current cards in the deck
-    virtual ~Deck() = default;
+    //discards the card in the index
+    virtual void discardCard(int idx) = 0;
 
-    //SETTER AND GETTER
+    //returns the current cards in the deck
+    virtual int getCurrentCards() = 0;
+
+    //SETTER AND GETTER FOR MAX CARDS
     void set_maximumNumCards(int n) 
     {
       this->maximumNumCards = n;
@@ -21,6 +24,8 @@ class Deck {
     {
       return this->maximumNumCards;
     };
+
+    ~Deck() = default;
 };
 
 #endif //DECK_H

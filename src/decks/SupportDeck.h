@@ -9,10 +9,14 @@ class SupportDeck : public AbstractEffectsDeck {
     vector<SupportCard*> deck; // Vector to hold Support cards
   public:
     SupportDeck() {
-      this->set_maximumNumCards(2);  
+      this->set_maximumNumCards(2);
+
+      // Initialise the deck with 1 Support cards
+      this->deck.push_back(new SupportCard());
     };
 
-    // pure virtual functions overrides
+    //PURE VIRTUAL FUNCTIONS OVERRIDE
+    //FROM DECK
     void discardCard(int idx) override
     {
       this->deck.erase(this->deck.begin() + idx);
@@ -23,21 +27,14 @@ class SupportDeck : public AbstractEffectsDeck {
       return this->deck.size();
     };
 
+    //FROM ABSTRACTEFFECTSDECK
     void addEffectCard() override
     {
-      // adds card if deck isn't full
+      //Only add if deck is not full
       if (this->getCurrentCards() < this->get_maximumNumCards()) {
-        // add a new support card into the deck
+        // Add new Support card to the deck
         this->deck.push_back(new SupportCard());
       };
-    };
-
-    void makeDeck() override
-    {
-      deck.clear(); // clears the vector first
-      
-      // initialize the deck with 1 support card
-      this->deck.push_back(new SupportCard());
     };
 
     vector<SupportCard*> getDeck() 
@@ -46,9 +43,9 @@ class SupportDeck : public AbstractEffectsDeck {
     };
 
     ~SupportDeck() {
-      deck.clear(); // clear the vector of support cards
+      //deck.clear(); // Clear the vector of Support cards
     };
 
 };
 
-#endif //SUPPORTDECK_H
+#endif

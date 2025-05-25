@@ -3,10 +3,9 @@
 
 #include "Card.h"
 
-// back color of the card, each having their own special effects
 const string CardColor[] { "Red", "Black", "Blue" };
 
-const string Suit[] { "Club", "Diamond", "Heart", "Spade" };
+const string Suit[] { "Spade", "Heart", "Diamond", "Club" };
 
 class PlayingCard : public Card {
   private:
@@ -14,7 +13,7 @@ class PlayingCard : public Card {
     string color;
     string suit;
     string rank;
-    bool chosen; // if user picked the card or not
+    bool chosen;
   public:
     PlayingCard(string suit, string rank): suit(suit), rank(rank) 
     {
@@ -23,12 +22,7 @@ class PlayingCard : public Card {
       set_rank(stoi(rank));
     };
 
-    void chosen_true() // set bool to true if picked
-    {
-      this->chosen = true;
-    };
-
-    // pure virtual functions override
+    //PURE
     void draw() override
     {
     
@@ -42,10 +36,15 @@ class PlayingCard : public Card {
       else return 0;
     };
 
-    //SETTERS
-    void set_chips(int rank)
+    void chosen_true() //Set bool to true if picked 
     {
-      this->chips = rank;
+      this->chosen = true;
+    };
+
+    //SETTERS
+    void set_chips(int rank) 
+    {
+      this->chips = rank; // CONVERT STRING TO INT
     };
 
     void set_rank(int rank) 

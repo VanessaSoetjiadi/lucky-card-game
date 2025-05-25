@@ -5,9 +5,8 @@
 
 class AbstractEffectsDeck : public Deck {
     public:
-        virtual ~AbstractEffectsDeck() = default; // destructor
-        virtual void addEffectCard() = 0; // pure virtual function to add effect cards
-        virtual void makeDeck() = 0; // to reset the deck every new Game session
+        virtual ~AbstractEffectsDeck() = default; // Destructor
+        virtual void addEffectCard() = 0; // Pure virtual function to add effect cards
 };
 
 #endif // ABSTRACT_EFFECTS_DECK_H

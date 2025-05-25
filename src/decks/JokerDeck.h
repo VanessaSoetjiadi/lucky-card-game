@@ -6,13 +6,22 @@
 
 class JokerDeck : public AbstractEffectsDeck {
   private:
-    vector<JokerCard*> deck; // vector to hold Joker cards
+    vector<JokerCard*> deck; // Vector to hold Joker cards
   public:
     JokerDeck() {
       this->set_maximumNumCards(4);
+
+      //Initialize the deck with 2 Joker cards
+      for (int i = 0; i < 2; i++) 
+      {
+        //Random number for the lifespan (max 4 rounds)
+        int rnd = (rand() % 4) + 1;
+        this->deck.push_back(new JokerCard(rnd));
+      }
     };
     
-    // pure virtual functions override
+    //PURE VIRTUAL FUNCTIONS OVERRIDE
+    //FROM DECK
     void discardCard(int idx) override
     {
       this->deck.erase(this->deck.begin() + idx);
@@ -23,38 +32,28 @@ class JokerDeck : public AbstractEffectsDeck {
       return this->deck.size();
     };
 
+    //FROM ABSTRACTEFFECTSDECK
     void addEffectCard() override
     {
-      // adds card if deck isn't full
+      //Only add if deck is not full
       if (this->getCurrentCards() < this->get_maximumNumCards()) {
-        // add a new joker card into the deck, rnd is for the lifespan
-        int rnd = ((rand() % 4) + 1);
+        // Add new Joker card to the deck
+        int rnd = ((rand() % 4) - 1);
         this->deck.push_back(new JokerCard(rnd));
       };
-    };
-
-    void makeDeck() override
-    {
-      deck.clear(); // clears the vector first
-      
-      // initialize the deck with 2 Joker cards
-      for (int i = 0; i < 2; i++) 
-      {
-        // random number for the lifespan (max 4 rounds)
-        int rnd = (rand() % 4) + 1;
-        this->deck.push_back(new JokerCard(rnd));
-      }
     };
 
     vector<JokerCard*> getDeck() 
     {
       return this->deck;
     };
+
+    
     
     ~JokerDeck() {
-      deck.clear(); // clear the vector of joker cards
+      //deck.clear(); // Clear the vector of Joker cards
     };
 
 };
 
-#endif //JOKERDECK_H
+#endif

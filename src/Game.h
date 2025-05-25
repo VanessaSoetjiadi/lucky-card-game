@@ -22,147 +22,21 @@ class Game {
     // load font from file
     sf::Font font;
   public:
-    // constructor
-    Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
+    Game(): round(0), minimumScore(100)
     {
-      // declared outside the switch so that it exists even if 
       JokerDeck jkDeck;
       SupportDeck spDeck;
 
-      // window setup
-      window.setSize({800,600});
-      window.setTitle("Lucky Card Game");
-      if (!font.loadFromFile("assets/DejaVuSans.ttf")) {
-        std::cerr << "Failed to load font\n";
-      }
-      
-      // allow user to choose an action, and perform the action using a switch statement
-      std::string strings[3] = {"Play","Leaderboard","Exit"};
-      std::string title = "Lucky Card Game";
-      sf::Color colours[3] = {sf::Color::Green,sf::Color::Yellow,sf::Color::Red};
-      int choice = getChoice(title,3,strings,colours);
-      switch(choice) {
-        case 0:
-          // resets the joker, support deck for new games
-          jkDeck.makeDeck();
-          spDeck.makeDeck();
-
-          // runs the game
-          run(jkDeck, spDeck);
-          break;
-        case 1:
-          window.close();
-          std::cout << "Leaderboard not yet implemented." << std::endl;
-          break;
-        default:
-          window.close();
-          break;
-      }
+      runGame(jkDeck, spDeck);
     };
 
-    // user chooses what they would like to do
-    int getChoice(std::string title_string,int num_options,std::string strings[],sf::Color colours[]) {
-      // create graphics for menu buttons
-      int b_width = 200;
-      int b_height = 30;
-      std::vector<sf::RectangleShape> menu_buttons;
-      std::vector<sf::Text> menu_texts;
-      for (int i = 0; i < num_options; i++) {
-          sf::RectangleShape rect;
-          menu_buttons.push_back(rect);
-          menu_buttons[i].setSize({b_width, b_height});
-          menu_buttons[i].setFillColor(colours[i]);
-          menu_buttons[i].setPosition(window.getSize().x/2 - b_width/2, window.getSize().y/2 - 2.5*b_height + 2*i*b_height);
-
-          sf::Text text;
-          menu_texts.push_back(text);
-          menu_texts[i].setFillColor(sf::Color::Black);
-          menu_texts[i].setString(strings[i]);
-          menu_texts[i].setPosition(window.getSize().x/2 - b_width/2, window.getSize().y/2 - 2.5*b_height + 2*i*b_height);
-          menu_texts[i].setFont(font);
-          menu_texts[i].setCharacterSize(20);
-      }
-
-      sf::Text title;
-      title.setFont(font);
-      title.setCharacterSize(30);
-      title.setString(title_string);
-      title.setFillColor(sf::Color::White);
-      int t_height = title.getGlobalBounds().height;
-      int t_width = title.getGlobalBounds().width;
-      title.setPosition(window.getSize().x/2 - t_width/2, window.getSize().y/2 - 3.5*b_height - t_height);
-
-      // loop to detect inputs and draw menu
-      while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-                }
-            if (event.type == sf::Event::MouseButtonPressed) {
-
-                // then check for each card in hand
-                for (int i = 0; i < 3; i++) {
-                    int left = menu_buttons[i].getPosition().x;
-                    int right = left + menu_buttons[i].getSize().x;
-                    int top = menu_buttons[i].getPosition().y;
-                    int bottom = top + menu_buttons[i].getSize().y;
-                    int x = event.mouseButton.x;
-                    int y = event.mouseButton.y;
-
-                    // when this if statement is true, it means that the button at index i was pressed;
-                    if ((left <= x && x <= right) && (top <= y && y <= bottom)) {
-                        return i;
-                    }
-                }
-            }
-        }
-
-        // draw menu
-        window.clear(sf::Color::Black);
-        for (int i = 0; i < 3; i++) {
-            window.draw(menu_buttons[i]);
-            window.draw(menu_texts[i]);
-        }
-        window.draw(title);
-        window.display();
-      }
-};
-
-    // temporary function 'run()' to replace 'runGame()' during sfml development
-    void run(JokerDeck jkDeck, SupportDeck spDeck) {
-      // main gameplay loop
-      while (window.isOpen()) {
-        lose_status = false;
-        while (lose_status == false) {
-          round++;
-
-          // get input for difficulty
-          std::string diff_strings[3] = {"Easy","Medium","Difficult"};
-          sf::Color diff_colours[3] = {sf::Color::White,sf::Color::White,sf::Color::White};
-          int d = getChoice("Select Difficulty",3,diff_strings,diff_colours);
-        
-        sf::Event event;
-        while (window.pollEvent(event)) {
-          if (event.type == sf::Event::Closed) {
-            window.close();
-            }
-        }
-      window.clear(sf::Color::Black);
-      window.display();
-      }
-    }
-  }
-
-    void runGame(JokerDeck jkDeck, SupportDeck spDeck) { // game loop
+    void runGame(JokerDeck jkDeck, SupportDeck spDeck) {
       lose_status = false;
 
       while (lose_status == false) {
         round++;
 
         int d = 0; //placeholder for input difficulty
-
-        cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
 
         while (d < 1 || d > 3) { // inputting the difficulty level
           cout << "Please select difficulty: 1, 2, 3\n";
@@ -216,30 +90,25 @@ class Game {
           hand.set_totalChips(0);
           hand.set_totalMults(0);
 
-          cout << "------------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
-
-          // printing the all of the decks on terminal
+          // printing the decks on the terminal, and others (hand & discard counts)
+          cout << "-----------------------------------------------------------" << endl;
           print_playingDeck(playDeck);
-          cout << "->";
           print_jokerDeck(jkDeck);
-          cout << "->";
           print_supportDeck(spDeck);
 
           cout << "Hands count: " << hand.get_handsCount() << " | " << "Discards count: " << hand.get_discardsCount() << "\n\n";
 
           // both are reset every iteration/round
-          int n = 0, m = 0, x = 0; // n is for the option, m is for the deck, x is for the sorting
+          int n = 0, m = 0; // n is for the option, m is for the deck
           string idx = ""; // user input for the chosen indexes
-          bool allChosen = true; // checks whether or not all the support cards is being used
 
-          while(n < 1 || n > 3) // input validation for the options
+          while(n < 1 || n > 2) // input validation for the options
           {
             cout << "Please select one of the following:\n1. Play/use cards\n";
             if (jkDeck.getCurrentCards() > 0 || spDeck.getCurrentCards() > 0 || hand.get_discardsCount() > 0) 
             {
               cout << "2. Discard cards\n"; // available only if there are cards to be discarded
             };
-            cout << "3. Sort cards\n";
             cout << "Answer: ";
             cin >> n;
             cout << "\n";
@@ -269,24 +138,10 @@ class Game {
                   hand.calculateTotalScore(playDeck, jkDeck, spDeck);
                   break;
                 case 2:
-                  for (int i = 0; i < spDeck.getCurrentCards(); i++) 
-                  {
-                    if (spDeck.getDeck()[i]->get_isUsed() == false) 
-                    {
-                      allChosen = false;
-                      break;
-                    };
-                  };
-
-                  if (allChosen == true) 
-                  {
-                    cout << "You're already using all of your support cards!\n";
-                  } else {
-                    cout << "Please input the indexes of the support cards that you wanna use: ";
-                    cin >> idx;
-                    indexValidator(idx, spDeck, 2);
-                    pickSupportCards(idx, spDeck);
-                  };
+                  cout << "Please input the indexes of the support cards that you wanna use: ";
+                  cin >> idx;
+                  indexValidator(idx, spDeck, 2);
+                  pickSupportCards(idx, spDeck);
                   break;
                 default:
                   break;
@@ -336,36 +191,16 @@ class Game {
                   break;
               };
               break;
-            case 3: // sorting the playing cards
-              cout << "Sort by:\n1. Suits\n2. Ranks\n";
-              cout << "Answer: ";
-              cin >> x;
-              switch(x) 
-              {
-                case 1:
-                  playDeck.sortInSuits();
-                  break;
-                case 2:
-                  playDeck.sortInRanks();
-                  break;
-                default:
-                  break;
-              };
-              break;
             default:
               break;
           };
       
-          if (n == 1 && m == 1) // user plays the playing cards, which means score would change
-          {
-            cout << "Your score: " << hand.get_totalScore() << " | " << "Score needed: " << minimumScore << "\n";     
-          };     
+          cout << "Your score: " << hand.get_totalScore() << " | " << "Score needed: " << minimumScore << "\n\n";          
         };
 
         if (hand.get_handsCount() < 1 && hand.get_totalScore() < minimumScore) 
         {
           cout << "You Lost." << "\n";
-          //highscores.push_back(hand.get_totalScore()); // push the high score?
           lose_status = true;
         } else {
           cout << "You Win!" << "\n\n";
@@ -373,7 +208,22 @@ class Game {
       };
     };
 
-    // printers for terminal based prototype
+    void renderAll() 
+    {
+      
+    };
+
+    //SETTERS
+    void set_difficulty(int inpt) 
+    {
+      this->difficulty = inpt;
+    };
+    
+    //GETTERS
+    int get_difficulty() {
+      return this->difficulty;
+    };
+
     void print_playingDeck(PlayingDeck& playDeck) {
       cout << "[ ";
       for (int i = 0; i < playDeck.getCurrentCards(); i++) 
@@ -448,15 +298,9 @@ class Game {
           int idx = index[i] - '0';
           if (idx < 0 || idx >= currentCards) 
           {
-            if (currentCards > 1) 
-            {
-              cout << "Please pick an index **within the deck's range (0-" << (currentCards - 1) << "): ";
-            } else {
-              cout << "The only index that can be chosen is 0: ";
-            };
+            cout << "Please pick an index **within the deck's range (0-" << (currentCards - 1) << "): ";
             cin >> index;
             isValid = false;
-            cout << "\n";
             break;
           }
 
@@ -465,7 +309,6 @@ class Game {
             cout << "Duplicate index (" << index[i] << "). Pick unique indices: ";
             cin >> index;
             isValid = false;
-            cout << "\n";
             break;
           }
         };
@@ -487,33 +330,10 @@ class Game {
     {
       for (int i = 0; i < index.length(); i++) 
       {
-        if (spDeck.getDeck()[index[i] - '0']->get_isUsed() == true) 
-        {
-          cout << "Support" << spDeck.getDeck()[i]->get_rarity() << " is already chosen to be used next hand played.\n";
-        } else {
-          spDeck.getDeck()[index[i] - '0']->set_Used();
-          cout << "Support" << spDeck.getDeck()[i]->get_rarity() << " will be used next hand played.\n";
-        };
+        spDeck.getDeck()[index[i] - '0']->set_Used();
+        cout << "Support" << spDeck.getDeck()[i]->get_rarity() << " will be used next hand played.";
       };
     };
-
-
-    //SETTERS
-    void set_difficulty(int inpt) 
-    {
-      this->difficulty = inpt;
-    };
-    
-    //GETTERS
-    int get_difficulty() {
-      return this->difficulty;
-    }; 
-
-    sf::RenderWindow& getWindow() {
-      // the RenderWindow class is non-copyable, so it is impossible to return directly,
-      // therefore we set the return type as an address in the function definition
-      return window;
-    }
 
     ~Game() {};
 };
