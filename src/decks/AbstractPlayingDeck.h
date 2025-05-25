@@ -8,14 +8,30 @@
 
 class AbstractPlayingDeck : public Deck {
     protected:
-        vector<PlayingCard*> deck; // Vector to hold PlayingCard objects
+        vector<PlayingCard*> deck; // vector to hold PlayingCard objects
     public:
         vector<PlayingCard*> getDeck() 
         {
             return this->deck;
         };
 
-        //VIRTUAL FUNCTIONS IMPLEMENTED
+        void sortInSuits() // sort the deck based on their suits (alphabetical order)
+        {
+            std::sort(deck.begin(), deck.end(),
+            [](PlayingCard* a, PlayingCard* b) {
+                return a->get_suit() < b->get_suit();
+            });
+        };
+
+        void sortInRanks() // sort the deck based on their ranks
+        {
+            std::sort(deck.begin(), deck.end(), 
+            [](PlayingCard* a, PlayingCard* b) {
+                return a->get_chips() < b->get_chips();
+            });
+        };
+
+        // pure virtual functions override
         int getCurrentCards() override
         {
             return this->deck.size();
@@ -24,22 +40,6 @@ class AbstractPlayingDeck : public Deck {
         void discardCard(int idx) override
         {
             this->deck.erase(this->deck.begin() + idx);
-        };
-
-        void sortInSuits() // Sort the deck based on the suits
-        {
-            std::sort(deck.begin(), deck.end(),
-            [](PlayingCard* a, PlayingCard* b) {
-                return a->get_suit() < b->get_suit();
-            });
-        };
-
-        void sortInRanks() // Sort the deck based on the ranks
-        {
-            std::sort(deck.begin(), deck.end(), 
-            [](PlayingCard* a, PlayingCard* b) {
-                return a->get_chips() < b->get_chips();
-            });
         };
 };
 

@@ -17,17 +17,17 @@ class JokerCard : public EffectCard {
 
       switch (rnd) 
       {
-        case 0: //COMMON
-          bonusChips = (rand() % 10) + 1;
-          bonusMults = (rand() % 10) + 1;
+        case 0: // common
+          bonusChips = (rand() % 4) + 1;
+          bonusMults = (rand() % 4) + 1;
           break;
-        case 1: //RARE
-          bonusChips = (rand() % 30) + 1;
-          bonusMults = (rand() % 30) + 1;
+        case 1: // rare
+          bonusChips = (rand() % 8) + 1;
+          bonusMults = (rand() % 8) + 1;
           break;
-        case 2: //SUPER RARE
-          bonusChips = (rand() % 50) + 1;
-          bonusMults = (rand() % 50) + 1;
+        case 2: // super rare
+          bonusChips = (rand() % 15) + 1;
+          bonusMults = (rand() % 15) + 1;
           break;
       };
 
@@ -35,13 +35,18 @@ class JokerCard : public EffectCard {
       set_bonus_mults(bonusMults);
     };
 
-    //PURE VIRTUAL FUNCTIONS OVERRIDE
+    void subtract_lifespan() // decrease the lifespan by 1
+    {
+      this->lifeSpan--;
+    };
+
+    // pure virtual functions override
     void draw() override
     {
       
     };
 
-    int randomizer() override 
+    int randomizer() override // randomizer for card rarity
     {
       int rnd = rand() % 100;
       if (rnd > 95) return 2;
@@ -53,11 +58,6 @@ class JokerCard : public EffectCard {
     int get_lifespan()
     {
       return this->lifeSpan; // Return the lifespan of the Joker card
-    };
-
-    void subtract_lifespan() //Subtracts the lifespan
-    {
-      this->lifeSpan--;
     };
 
     ~JokerCard() {};

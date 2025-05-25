@@ -17,17 +17,17 @@ class SupportCard : public EffectCard {
 
       switch (rnd) 
       {
-        case 0: //COMMON
-          bonusChips = (rand() % 10) + 1;
-          bonusMults = (rand() % 10) + 1;
+        case 0: // common
+          bonusChips = (rand() % 4) + 1;
+          bonusMults = (rand() % 4) + 1;
           break;
-        case 1: //RARE
-          bonusChips = (rand() % 30) + 1;
-          bonusMults = (rand() % 30) + 1;
+        case 1: // rare
+          bonusChips = (rand() % 8) + 1;
+          bonusMults = (rand() % 8) + 1;
           break;
-        case 2: //SUPER RARE
-          bonusChips = (rand() % 50) + 1;
-          bonusMults = (rand() % 50) + 1;
+        case 2: // super rare
+          bonusChips = (rand() % 15) + 1;
+          bonusMults = (rand() % 15) + 1;
           break;
       };
 
@@ -35,7 +35,7 @@ class SupportCard : public EffectCard {
       set_bonus_mults(bonusMults);
     };
 
-    //PURE
+    // pure virtual functions override
     void draw() override
     {
       
@@ -50,14 +50,14 @@ class SupportCard : public EffectCard {
     };
 
     //GETTERS
-    bool get_isUsed() const 
+    bool get_isUsed()
     {
-      return this->isUsed; // Return if card is used/not
+      return this->isUsed; // return if user picked/use the card or not
     };
     
     void set_Used()
     {
-      this->isUsed = true; // Set card as used
+      this->isUsed = true; // user picked to use the card
     };
 
     ~SupportCard() {};

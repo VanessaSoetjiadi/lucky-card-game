@@ -3,10 +3,9 @@
 
 int main()
 {
-  Game game;
-  UnitTest unitTest;
+  // seeding the randomizer functions to get different results each rounds
+  std::srand(std::time(0));
   
-  unitTest.testAll();
-
+  Game game;
   return 0;
 }

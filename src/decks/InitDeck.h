@@ -10,7 +10,7 @@ class InitDeck : public AbstractPlayingDeck {
       this->set_maximumNumCards(52);
     };
 
-    //MAKE 52 INITIAL CARDS IN DECK (4 SUITS, 13 RANKS)
+    // make the 52 initial playing cards (4 suits, 13 ranks)
     void makeDeck()
     {
       for (int i = 0; i < 4; i++) 
