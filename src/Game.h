@@ -11,6 +11,12 @@
 
 using namespace std;
 
+// used to allow detection of clicking on the sprite
+struct CardSprite {
+  sf::Sprite sprite;
+  PlayingCard* card;
+};
+
 class Game {
   private:
     int minimumScore;
@@ -19,8 +25,8 @@ class Game {
     bool lose_status;
     vector<int> highscores;
     sf::RenderWindow window;
-    // load font from file
     sf::Font font;
+    vector<CardSprite> card_sprites; // vector of every item on screen to be drawn, including sprites, text, and simple shapes
   public:
     // constructor
     Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
@@ -48,7 +54,7 @@ class Game {
           spDeck.makeDeck();
 
           // runs the game
-          run(jkDeck, spDeck);
+          sfml_runGame(jkDeck, spDeck);
           break;
         case 1:
           window.close();
@@ -82,7 +88,6 @@ class Game {
           menu_texts[i].setFont(font);
           menu_texts[i].setCharacterSize(20);
       }
-
       sf::Text title;
       title.setFont(font);
       title.setCharacterSize(30);
@@ -101,8 +106,8 @@ class Game {
                 }
             if (event.type == sf::Event::MouseButtonPressed) {
 
-                // then check for each card in hand
-                for (int i = 0; i < 3; i++) {
+                // then check for button on screen
+                for (int i = 0; i < num_options; i++) {
                     int left = menu_buttons[i].getPosition().x;
                     int right = left + menu_buttons[i].getSize().x;
                     int top = menu_buttons[i].getPosition().y;
@@ -120,7 +125,7 @@ class Game {
 
         // draw menu
         window.clear(sf::Color::Black);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < num_options; i++) {
             window.draw(menu_buttons[i]);
             window.draw(menu_texts[i]);
         }
@@ -129,30 +134,110 @@ class Game {
       }
 };
 
-    // temporary function 'run()' to replace 'runGame()' during sfml development
-    void run(JokerDeck jkDeck, SupportDeck spDeck) {
+    // temporary function 'sfml_runGame()' to replace 'runGame()' during sfml development
+    void sfml_runGame(JokerDeck jkDeck, SupportDeck spDeck) {
       // main gameplay loop
-      while (window.isOpen()) {
-        lose_status = false;
-        while (lose_status == false) {
-          round++;
+      lose_status = false;
+      while (lose_status == false) {
+        round++;
 
-          // get input for difficulty
-          std::string diff_strings[3] = {"Easy","Medium","Difficult"};
-          sf::Color diff_colours[3] = {sf::Color::White,sf::Color::White,sf::Color::White};
-          int d = getChoice("Select Difficulty",3,diff_strings,diff_colours);
+        // get input for difficulty
+        std::string diff_strings[3] = {"Easy","Medium","Difficult"};
+        sf::Color diff_colours[3] = {sf::Color::White,sf::Color::White,sf::Color::White};
+        int d = getChoice("Select Difficulty",3,diff_strings,diff_colours);
+        if (!window.isOpen()) {return;} // ensure window is still open before continuing
+
+        switch(d) // determining the minimum score based on the difficulty chosen
+        {
+          case 0:
+            minimumScore += 75*round;
+            break;
+          case 1:
+            minimumScore += 150*round;
+            break;
+          case 2:
+            minimumScore += 250*round;
+            break;
+          default:
+            minimumScore += 75*round;
+            break;
+        };
         
-        sf::Event event;
-        while (window.pollEvent(event)) {
-          if (event.type == sf::Event::Closed) {
-            window.close();
+        std::string display = "You'll need " + std::to_string(minimumScore) + " to win!";
+        std::string strings[1] = {"Continue"};
+        sf::Color colours[1] = {sf::Color::White};
+        getChoice(display,1,strings,colours); // this function will return an int, but we don't need it, we only need to wait for the return
+        if (!window.isOpen()) {return;} // ensure window is still open before continuing
+        
+        // add joker card every 2 rounds
+        if (round % 2 == 0) 
+        {
+          jkDeck.addEffectCard();
+        };
+
+        // add support card every 4 rounds
+        if (round % 4 == 0) 
+        {
+          spDeck.addEffectCard();
+        };
+
+        // initilizations
+        Hand hand;
+
+        InitDeck initialDeck;
+        initialDeck.makeDeck();
+
+        PlayingDeck playDeck;
+
+        playDeck.makeDeck(initialDeck);
+
+        // game loop
+        while (window.isOpen()) {
+          sf::Event event;
+          while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+              window.close();
             }
+            if (event.type == sf::Event::MouseButtonPressed) {
+              sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+              for (int i = 0; i < card_sprites.size(); i++) {
+                if (card_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
+                  if (card_sprites[i].card->get_chosen()) {card_sprites[i].card->chosen_false();}
+                  else {card_sprites[i].card->chosen_true();}
+                }
+              }
+            }
+          }
+          displayAll(playDeck, jkDeck, spDeck);
         }
-      window.clear(sf::Color::Black);
-      window.display();
-      }
+
     }
   }
+
+
+    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) {
+      card_sprites.clear(); // reset vector of drawables
+      window.clear(sf::Color::Black);
+
+      // add cards in hand
+      int x = 20; // border by 20 from left side
+      for (int i = 0; i < playDeck.getCurrentCards(); i++) {
+        PlayingCard* card = playDeck.getDeck()[i];
+        sf::Sprite sp(card->draw());
+        if (card->get_chosen()) {sp.scale(0.3,0.3);} // scale depends on if card is chosen or not
+        else {sp.scale(0.25,0.25);}
+        sp.setPosition(x,window.getSize().y-sp.getGlobalBounds().height-20);
+        x += sp.getGlobalBounds().width + 20; // increment x co-ord
+
+        card_sprites.push_back({sp,card});
+      };
+      
+      // draw all
+      for (int i = 0; i < card_sprites.size(); i++) {
+        window.draw(card_sprites[i].sprite);
+      }
+      window.display();
+    }
 
     void runGame(JokerDeck jkDeck, SupportDeck spDeck) { // game loop
       lose_status = false;

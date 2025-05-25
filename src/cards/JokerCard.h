@@ -41,7 +41,7 @@ class JokerCard : public EffectCard {
     };
 
     // pure virtual functions override
-    void draw() override
+    sf::Texture& draw() override
     {
       
     };

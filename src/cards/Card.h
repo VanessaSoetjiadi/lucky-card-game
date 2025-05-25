@@ -8,10 +8,8 @@
 using namespace std;
 
 class Card {
-  protected:
-    sf::RectangleShape card;
   public:
-    virtual void draw() = 0;
+    virtual sf::Texture& draw() = 0;
     virtual int randomizer() = 0;
     virtual ~Card() = default;
 };

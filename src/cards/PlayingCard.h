@@ -15,12 +15,23 @@ class PlayingCard : public Card {
     string suit;
     string rank;
     bool chosen; // if user picked the card or not
+    sf::Texture texture;
   public:
     PlayingCard(string suit, string rank): suit(suit), rank(rank) 
     {
       this->color = CardColor[randomizer()];
-
+      this->chosen = false;
       set_rank(stoi(rank));
+
+      // the following is inefficient, but lowercase logic was not functional
+      std::string lower_suit;
+      if (suit == "Club") {lower_suit = "clubs_";}
+      if (suit == "Diamond") {lower_suit = "diamonds_";}
+      if (suit == "Heart") {lower_suit = "hearts_";}
+      if (suit == "Spade") {lower_suit = "spades_";}
+
+      std::string path = "assets/cards/" + lower_suit + this->rank + ".png";
+      texture.loadFromFile(path);
     };
 
     void chosen_true() // set bool to true if picked
@@ -28,10 +39,14 @@ class PlayingCard : public Card {
       this->chosen = true;
     };
 
+    void chosen_false() {
+      this->chosen = false;
+    };
+
     // pure virtual functions override
-    void draw() override
-    {
-    
+    sf::Texture& draw() override
+    {     
+      return this->texture;
     };
 
     int randomizer() override 
