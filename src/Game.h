@@ -19,6 +19,8 @@ class Game {
     bool lose_status;
     vector<int> highscores;
     sf::RenderWindow window;
+    // load font from file
+    sf::Font font;
   public:
     // constructor
     Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
@@ -30,9 +32,15 @@ class Game {
       // window setup
       window.setSize({800,600});
       window.setTitle("Lucky Card Game");
+      if (!font.loadFromFile("assets/DejaVuSans.ttf")) {
+        std::cerr << "Failed to load font\n";
+      }
       
       // allow user to choose an action, and perform the action using a switch statement
-      int choice = mainMenu();
+      std::string strings[3] = {"Play","Leaderboard","Exit"};
+      std::string title = "Lucky Card Game";
+      sf::Color colours[3] = {sf::Color::Green,sf::Color::Yellow,sf::Color::Red};
+      int choice = getChoice(title,3,strings,colours);
       switch(choice) {
         case 0:
           // resets the joker, support deck for new games
@@ -53,22 +61,13 @@ class Game {
     };
 
     // user chooses what they would like to do
-    int mainMenu() {
+    int getChoice(std::string title_string,int num_options,std::string strings[],sf::Color colours[]) {
       // create graphics for menu buttons
-
-      // load font from file
-      sf::Font font;
-      if (!font.loadFromFile("assets/DejaVuSans.ttf")) {
-          std::cerr << "Failed to load font\n";
-          return 1;
-      }
-      sf::Color colours[3] = {sf::Color::Green,sf::Color::Yellow,sf::Color::Red};
-      std::string strings[3] = {"Play","Leaderboard","Exit"};
       int b_width = 200;
       int b_height = 30;
       std::vector<sf::RectangleShape> menu_buttons;
       std::vector<sf::Text> menu_texts;
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < num_options; i++) {
           sf::RectangleShape rect;
           menu_buttons.push_back(rect);
           menu_buttons[i].setSize({b_width, b_height});
@@ -87,7 +86,7 @@ class Game {
       sf::Text title;
       title.setFont(font);
       title.setCharacterSize(30);
-      title.setString("Lucky Card Game");
+      title.setString(title_string);
       title.setFillColor(sf::Color::White);
       int t_height = title.getGlobalBounds().height;
       int t_width = title.getGlobalBounds().width;
@@ -128,15 +127,24 @@ class Game {
         window.draw(title);
         window.display();
       }
-}
+};
 
     // temporary function 'run()' to replace 'runGame()' during sfml development
     void run(JokerDeck jkDeck, SupportDeck spDeck) {
+      // main gameplay loop
       while (window.isOpen()) {
+        lose_status = false;
+        while (lose_status == false) {
+          round++;
+
+          // get input for difficulty
+          std::string diff_strings[3] = {"Easy","Medium","Difficult"};
+          sf::Color diff_colours[3] = {sf::Color::White,sf::Color::White,sf::Color::White};
+          int d = getChoice("Select Difficulty",3,diff_strings,diff_colours);
+        
         sf::Event event;
         while (window.pollEvent(event)) {
           if (event.type == sf::Event::Closed) {
-            // text pop up confirmation
             window.close();
             }
         }
@@ -144,6 +152,7 @@ class Game {
       window.display();
       }
     }
+  }
 
     void runGame(JokerDeck jkDeck, SupportDeck spDeck) { // game loop
       lose_status = false;
