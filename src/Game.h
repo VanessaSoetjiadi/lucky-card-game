@@ -64,25 +64,34 @@ class Game {
       }
       sf::Color colours[3] = {sf::Color::Green,sf::Color::Yellow,sf::Color::Red};
       std::string strings[3] = {"Play","Leaderboard","Exit"};
-      int width = 200;
-      int height = 30;
+      int b_width = 200;
+      int b_height = 30;
       std::vector<sf::RectangleShape> menu_buttons;
       std::vector<sf::Text> menu_texts;
       for (int i = 0; i < 3; i++) {
           sf::RectangleShape rect;
           menu_buttons.push_back(rect);
-          menu_buttons[i].setSize({width, height});
+          menu_buttons[i].setSize({b_width, b_height});
           menu_buttons[i].setFillColor(colours[i]);
-          menu_buttons[i].setPosition(window.getSize().x/2 - width/2, window.getSize().y/2 - 2.5*height + 2*i*height);
+          menu_buttons[i].setPosition(window.getSize().x/2 - b_width/2, window.getSize().y/2 - 2.5*b_height + 2*i*b_height);
 
           sf::Text text;
           menu_texts.push_back(text);
           menu_texts[i].setFillColor(sf::Color::Black);
           menu_texts[i].setString(strings[i]);
-          menu_texts[i].setPosition(window.getSize().x/2 - width/2, window.getSize().y/2 - 2.5*height + 2*i*height);
+          menu_texts[i].setPosition(window.getSize().x/2 - b_width/2, window.getSize().y/2 - 2.5*b_height + 2*i*b_height);
           menu_texts[i].setFont(font);
           menu_texts[i].setCharacterSize(20);
       }
+
+      sf::Text title;
+      title.setFont(font);
+      title.setCharacterSize(30);
+      title.setString("Lucky Card Game");
+      title.setFillColor(sf::Color::White);
+      int t_height = title.getGlobalBounds().height;
+      int t_width = title.getGlobalBounds().width;
+      title.setPosition(window.getSize().x/2 - t_width/2, window.getSize().y/2 - 3.5*b_height - t_height);
 
       // loop to detect inputs and draw menu
       while (window.isOpen()) {
@@ -116,6 +125,7 @@ class Game {
             window.draw(menu_buttons[i]);
             window.draw(menu_texts[i]);
         }
+        window.draw(title);
         window.display();
       }
 }
