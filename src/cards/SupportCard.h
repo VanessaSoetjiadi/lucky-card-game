@@ -36,8 +36,9 @@ class SupportCard : public EffectCard {
       set_bonus_mults(bonusMults);
     };
 
-    std::string describe() {
+    std::string describe() override {
       std::string description = this->rarity + "\n" + std::to_string(this->bonus_chips) + " Chips\n" + std::to_string(this->bonus_mults) + " Mults";
+      return description;
     };
 
     int randomizer() override 

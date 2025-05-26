@@ -83,8 +83,8 @@ class Game {
     // user chooses what they would like to do
     int getChoice(std::string title_string,int num_options,std::string strings[],sf::Color colours[]) {
       // create graphics for menu buttons
-      int b_width = 200;
-      int b_height = 30;
+      float b_width = 200;
+      float b_height = 30;
       std::vector<sf::RectangleShape> menu_buttons;
       std::vector<sf::Text> menu_texts;
       for (int i = 0; i < num_options; i++) {
