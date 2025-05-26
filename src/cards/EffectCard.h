@@ -19,15 +19,23 @@ class EffectCard : public Card {
       return this->texture;
     };
     
+    std::string get_text_description() {
+      std::string desc;
+      desc = this->rarity + "\n";
+      desc += std::to_string(this->bonus_chips) + " Chips\n";
+      desc += std::to_string(this->bonus_mults) + " Mults\n";
+      return desc;
+    }
+
     sf::Text get_description(int x, int y) {
       sf::Text text;
       text.setCharacterSize(10);
       text.setPosition({x,y});
       text.setColor(sf::Color::White);
-      text.setString("abc");
+      text.setString(this->get_text_description());
       return text;
     }
-
+    
     //SETTERS
     void set_bonus_mults(int n) 
     {
