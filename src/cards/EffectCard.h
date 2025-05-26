@@ -19,7 +19,7 @@ class EffectCard : public Card {
       return this->texture;
     };
     
-    std::string get_text_description() {
+    virtual std::string get_text_description() {
       std::string desc;
       desc = this->rarity + "\n";
       desc += std::to_string(this->bonus_chips) + " Chips\n";

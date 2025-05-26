@@ -63,14 +63,14 @@ class JokerCard : public EffectCard {
       return this->lifeSpan; // Return the lifespan of the Joker card
     };
 
-    // std::string get_text_description() {
-    //   std::string desc;
-    //   desc = rarity + "\n";
-    //   desc += std::to_string(bonus_chips) + " Chips\n";
-    //   desc += std::to_string(bonus_mults) + " Mults\n";
-    //   desc += std::to_string(lifeSpan) + " Life\n";
-    //   return desc;
-    // }
+    std::string get_text_description() override{
+      std::string desc;
+      desc = rarity + "\n";
+      desc += std::to_string(bonus_chips) + " Chips\n";
+      desc += std::to_string(bonus_mults) + " Mults\n";
+      desc += std::to_string(lifeSpan) + " Lifespan\n";
+      return desc;
+    }
 
     ~JokerCard() {};
 };
