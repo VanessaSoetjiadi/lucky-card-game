@@ -231,6 +231,7 @@ class Game {
 
     void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) {
       card_sprites.clear(); // reset vector of drawables
+      joker_sprites.clear();
       window.clear(sf::Color::Black);
 
       // add cards in playDeck
@@ -250,11 +251,20 @@ class Game {
       x = 20;
       for (int i = 0; i < jkDeck.getCurrentCards(); i++) {
         JokerCard* card = jkDeck.getDeck()[i];
+        sf::Sprite sp(card->draw());
+        sp.scale(0.25,0.25);
+        sp.setPosition(x,20);
+
+        x+= sp.getGlobalBounds().width + 20;
+        joker_sprites.push_back({sp,card});
       }
       
       // draw all
       for (int i = 0; i < card_sprites.size(); i++) {
         window.draw(card_sprites[i].sprite);
+      }
+      for (int i = 0; i < joker_sprites.size(); i++) {
+        window.draw(joker_sprites[i].sprite);
       }
 
       window.display();
