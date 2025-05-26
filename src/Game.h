@@ -234,18 +234,22 @@ class Game {
               }              
             }
           }
-          displayAll(playDeck, jkDeck, spDeck, true, true);
+
+          displayAll(playDeck, jkDeck, spDeck);
         }
 
     }
   }
 
 
-    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck, bool can_play, bool can_discard) {
+    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) {
       card_sprites.clear(); // reset vector of drawables
       joker_sprites.clear();
       support_sprites.clear();
       window.clear(sf::Color::Black);
+
+      bool can_play = false; //    used to decide if play/discard buttons are rendered
+      bool can_discard = false; // in the for loops, if at least one card is chosen, the button will be rendered
 
       // add cards in playDeck
       int x = 20; // a tracker is used for x coord because the size of each card can vary,
@@ -254,7 +258,11 @@ class Game {
       for (int i = 0; i < playDeck.getCurrentCards(); i++) {
         PlayingCard* card = playDeck.getDeck()[i];
         sf::Sprite sp(card->draw());
-        if (card->get_chosen()) {sp.scale(0.3,0.3);} // scale depends on if card is chosen or not
+        if (card->get_chosen()) {
+          sp.scale(0.3,0.3);
+          can_play = true;
+          can_discard = true;
+        } // scale depends on if card is chosen or not
         else {sp.scale(0.25,0.25);}
         sp.setPosition(x,window.getSize().y-sp.getGlobalBounds().height-20);
         x += sp.getGlobalBounds().width + 20; // increment x co-ord
@@ -267,7 +275,10 @@ class Game {
       for (int i = 0; i < jkDeck.getCurrentCards(); i++) {
         JokerCard* card = jkDeck.getDeck()[i];
         sf::Sprite sp(card->draw());
-        if (card->get_chosen()) {sp.scale(0.3,0.3);} // scale depends on if card is chosen or not
+        if (card->get_chosen()) {
+          sp.scale(0.3,0.3);
+          can_discard = true;
+        } // scale depends on if card is chosen or not
         else {sp.scale(0.25,0.25);}
         sp.setPosition(x,20);
 
@@ -283,7 +294,10 @@ class Game {
       for (int i = 0; i < spDeck.getCurrentCards(); i++) {
         SupportCard* card = spDeck.getDeck()[i];
         sf::Sprite sp(card->draw());
-        if (card->get_chosen()) {sp.scale(0.3,0.3);} // scale depends on if card is chosen or not
+        if (card->get_chosen()) {
+          sp.scale(0.3,0.3);
+          can_discard = true;
+        } // scale depends on if card is chosen or not
         else {sp.scale(0.25,0.25);}
         x -= (sp.getGlobalBounds().width + 20); // x is iterated before drawing because
         //                                         these cards fill from the right
@@ -311,8 +325,8 @@ class Game {
       if (can_play) {
         sf::RectangleShape play_rect;
         play_rect.setFillColor(sf::Color::Green);
-        play_rect.setSize({100,30});
-        int a = window.getSize().x - 150;
+        play_rect.setSize({80,30});
+        int a = window.getSize().x - 100;
         int b = window.getSize().y - 100;
         play_rect.setPosition({a,b});
         sf::Text play_text;
@@ -329,8 +343,8 @@ class Game {
       if (can_discard) {
         sf::RectangleShape discard_rect;
         discard_rect.setFillColor(sf::Color::Red);
-        discard_rect.setSize({100,30});
-        int a = window.getSize().x - 150;
+        discard_rect.setSize({80,30});
+        int a = window.getSize().x - 100;
         int b = window.getSize().y - 50;
         discard_rect.setPosition({a,b});
         sf::Text discard_text;
