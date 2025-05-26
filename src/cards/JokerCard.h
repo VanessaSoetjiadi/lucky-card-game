@@ -15,24 +15,19 @@ class JokerCard : public EffectCard {
       int bonusChips = 0; 
       int bonusMults = 0;
 
-      std::string path = "assets/cards/";
-
       switch (rnd) 
       {
         case 0: // common
           bonusChips = (rand() % 4) + 1;
           bonusMults = (rand() % 4) + 1;
-          texture.loadFromFile(path + "joker_black.png");
           break;
         case 1: // rare
           bonusChips = (rand() % 8) + 1;
           bonusMults = (rand() % 8) + 1;
-          texture.loadFromFile(path + "joker_red.png");
           break;
         case 2: // super rare
           bonusChips = (rand() % 15) + 1;
           bonusMults = (rand() % 15) + 1;
-          texture.loadFromFile(path + "joker_green.png");
           break;
       };
 
@@ -40,13 +35,15 @@ class JokerCard : public EffectCard {
       set_bonus_mults(bonusMults);
     };
 
-    std::string describe() {
-      std::string description = this->rarity + "\n" + std::to_string(this->lifeSpan) + " Life\n" + std::to_string(this->bonus_chips) + " Chips\n" + std::to_string(this->bonus_mults) + " Mults";
-    };
-
     void subtract_lifespan() // decrease the lifespan by 1
     {
       this->lifeSpan--;
+    };
+
+    // pure virtual functions override
+    sf::Texture& draw() override
+    {
+      
     };
 
     int randomizer() override // randomizer for card rarity

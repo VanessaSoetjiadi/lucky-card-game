@@ -8,8 +8,6 @@
 using namespace std;
 
 class Card {
-  protected:
-    sf::Texture texture;
   public:
     virtual sf::Texture& draw() = 0;
     virtual int randomizer() = 0;

@@ -34,22 +34,18 @@ class SupportDeck : public AbstractEffectsDeck {
 
     void makeDeck() override
     {
-      for (auto card : deck) delete card;
       deck.clear(); // clears the vector first
       
       // initialize the deck with 1 support card
       this->deck.push_back(new SupportCard());
     };
 
-    vector<SupportCard*>& getDeck() 
+    vector<SupportCard*> getDeck() 
     {
       return this->deck;
     };
 
     ~SupportDeck() {
-      for (auto card : deck) {
-        delete card;
-      }
       deck.clear(); // clear the vector of support cards
     };
 
