@@ -29,6 +29,11 @@ struct SupportSprite {
   sf::Text description;
 };
 
+struct Button {
+  sf::RectangleShape rectangle;
+  std::string type;
+};
+
 class Game {
   private:
     int minimumScore;
@@ -41,6 +46,7 @@ class Game {
     vector<CardSprite> card_sprites; // vector of playing cards
     vector<JokerSprite> joker_sprites; // vector of jokers
     vector<SupportSprite> support_sprites; // vector of supports. note - support cards don't actually use a unique sprite, just text on placeholder sprite
+    vector<Button> buttons; // vector to hold play button and discard button
   public:
     // constructor
     Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
@@ -206,32 +212,46 @@ class Game {
         playDeck.makeDeck(initialDeck);
 
         // game loop
-        while (window.isOpen()) {
+        while (window.isOpen()) { // forever loop
           sf::Event event;
-          while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+          while (window.pollEvent(event)) { // get event from sfml
+            if (event.type == sf::Event::Closed) { // close button
               window.close();
             }
-            if (event.type == sf::Event::MouseButtonPressed) {
+            if (event.type == sf::Event::MouseButtonPressed) { // mouse button
               sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-              for (int i = 0; i < card_sprites.size(); i++) {
-                if (card_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
-                  if (card_sprites[i].card->get_chosen()) {card_sprites[i].card->chosen_false();}
+              // render playing cards
+              for (int i = 0; i < card_sprites.size(); i++) { // for each playing card
+                if (card_sprites[i].sprite.getGlobalBounds().contains(mousePos)) { // if mouse is over the card
+                  if (card_sprites[i].card->get_chosen()) {card_sprites[i].card->chosen_false();} // toggle the card's chosen state
                   else {card_sprites[i].card->chosen_true();}
                 }
               }
+              // same for jokers
               for (int i = 0; i < joker_sprites.size(); i++) {
                 if (joker_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
                   if (joker_sprites[i].card->get_chosen()) {joker_sprites[i].card->chosen_false();}
                   else {joker_sprites[i].card->chosen_true();}
                 }
               }
+              // same for supports
               for (int i = 0; i < support_sprites.size(); i++) {
                 if (support_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
                   if (support_sprites[i].card->get_chosen()) {support_sprites[i].card->chosen_false();}
                   else {support_sprites[i].card->chosen_true();}
                 }
-              }              
+              }
+              // render buttons
+              for (int i = 0; i < buttons.size(); i++) {
+                if (buttons[i].rectangle.getGlobalBounds().contains(mousePos)) {
+                  if (buttons[i].type == "play") {
+                    playDeck.discardCard(0); // test
+                  }
+                  else if (buttons[i].type == "discard") {
+                    playDeck.discardCard(0); // test
+                  }
+                }
+              }
             }
           }
 
@@ -327,36 +347,44 @@ class Game {
 
       // play button
       if (can_play) {
+        //create rectangle
         sf::RectangleShape play_rect;
         play_rect.setFillColor(sf::Color::Green);
         play_rect.setSize({80,30});
         int a = window.getSize().x - 100;
         int b = window.getSize().y - 100;
         play_rect.setPosition({a,b});
+        // create text
         sf::Text play_text;
         play_text.setFillColor(sf::Color::Black);
         play_text.setFont(font);
         play_text.setCharacterSize(20);
         play_text.setPosition({a,b});
         play_text.setString("Play");
+        // add to vector for click detection and draw
+        buttons.push_back({play_rect,"play"});
         window.draw(play_rect);
         window.draw(play_text);
       }
 
       // discard button
       if (can_discard) {
+        // rectangle
         sf::RectangleShape discard_rect;
         discard_rect.setFillColor(sf::Color::Red);
         discard_rect.setSize({80,30});
         int a = window.getSize().x - 100;
         int b = window.getSize().y - 50;
         discard_rect.setPosition({a,b});
+        // text
         sf::Text discard_text;
         discard_text.setFillColor(sf::Color::Black);
         discard_text.setFont(font);
         discard_text.setCharacterSize(20);
         discard_text.setPosition({a,b});
         discard_text.setString("Discard");
+        // add to vector and draw
+        buttons.push_back({discard_rect,"discard"});
         window.draw(discard_rect);
         window.draw(discard_text);
       }
