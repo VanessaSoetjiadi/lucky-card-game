@@ -231,17 +231,17 @@ class Game {
                   if (support_sprites[i].card->get_chosen()) {support_sprites[i].card->chosen_false();}
                   else {support_sprites[i].card->chosen_true();}
                 }
-              }
+              }              
             }
           }
-          displayAll(playDeck, jkDeck, spDeck);
+          displayAll(playDeck, jkDeck, spDeck, true, true);
         }
 
     }
   }
 
 
-    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) {
+    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck, bool can_play, bool can_discard) {
       card_sprites.clear(); // reset vector of drawables
       joker_sprites.clear();
       support_sprites.clear();
@@ -294,7 +294,7 @@ class Game {
         support_sprites.push_back({sp,card,desc});
       }
       
-      // draw all
+      // draw all cards
       for (int i = 0; i < card_sprites.size(); i++) {
         window.draw(card_sprites[i].sprite);
       }
@@ -305,6 +305,42 @@ class Game {
       for (int i = 0; i < support_sprites.size(); i++) {
         window.draw(support_sprites[i].sprite);
         window.draw(support_sprites[i].description);
+      }
+
+      // play button
+      if (can_play) {
+        sf::RectangleShape play_rect;
+        play_rect.setFillColor(sf::Color::Green);
+        play_rect.setSize({100,30});
+        int a = window.getSize().x - 150;
+        int b = window.getSize().y - 100;
+        play_rect.setPosition({a,b});
+        sf::Text play_text;
+        play_text.setFillColor(sf::Color::Black);
+        play_text.setFont(font);
+        play_text.setCharacterSize(20);
+        play_text.setPosition({a,b});
+        play_text.setString("Play");
+        window.draw(play_rect);
+        window.draw(play_text);
+      }
+
+      // discard button
+      if (can_discard) {
+        sf::RectangleShape discard_rect;
+        discard_rect.setFillColor(sf::Color::Red);
+        discard_rect.setSize({100,30});
+        int a = window.getSize().x - 150;
+        int b = window.getSize().y - 50;
+        discard_rect.setPosition({a,b});
+        sf::Text discard_text;
+        discard_text.setFillColor(sf::Color::Black);
+        discard_text.setFont(font);
+        discard_text.setCharacterSize(20);
+        discard_text.setPosition({a,b});
+        discard_text.setString("Discard");
+        window.draw(discard_rect);
+        window.draw(discard_text);
       }
 
       window.display();
