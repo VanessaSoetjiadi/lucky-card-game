@@ -245,61 +245,10 @@ class Game {
 
         card_sprites.push_back({sp,card});
       };
-      
-      
-      // add cards in jkDeck
-      x = 20; // initial border from left side
-      for (int i = 0; i < jkDeck.getCurrentCards(); i++) {
-        // generate joker card graphic
-        JokerCard* card = jkDeck.getDeck()[i];
-        sf::Sprite sp(card->draw());
-        sp.scale(0.25,0.25);
-        sp.setPosition(x, 20);
-        
-        // generate text description to go under card
-        sf::Text desc = card->get_description(x,sp.getGlobalBounds().height + 30,font);
-
-        // add to vector and increment x
-        joker_sprites.push_back({sp,card,desc});
-        x += sp.getGlobalBounds().width + 20; // increment x co-ord
-      };
-      
-      std::cout << "spDeck.getCurrentCards(): " << spDeck.getCurrentCards() << std::endl;
-      std::cout << "spDeck.getDeck().size(): " << spDeck.getDeck().size() << std::endl;
-
-      // add cards in spDeck
-      x = window.getSize().x - 20;
-      for (int i = 0; i < spDeck.getCurrentCards(); i++) {
-        std::cout << "x = " << x << std::endl;
-        // generate card graphic
-        SupportCard* card = spDeck.getDeck()[i];
-        if (!card) {
-          std::cout << "card " << i << " null" << std::endl;
-          continue;
-        }
-        sf::Sprite sp(card->draw());
-        sp.scale(0.25,0.25);
-        sp.setPosition(x,20);
-
-        // generate text description to go under card
-        sf::Text desc = card->get_description(x,sp.getGlobalBounds().height + 30,font);
-
-        // add to vector and increment x
-        support_sprites.push_back({sp,card,desc});
-        x -= sp.getGlobalBounds().width + 20; // increment x co-ord
-      }
 
       // draw all
       for (int i = 0; i < card_sprites.size(); i++) {
         window.draw(card_sprites[i].sprite);
-      }
-      for (int i = 0; i < joker_sprites.size(); i++) {
-        window.draw(joker_sprites[i].sprite);
-        window.draw(joker_sprites[i].description);
-      }
-      for (int i = 0; i < support_sprites.size(); i++) {
-        window.draw(support_sprites[i].sprite);
-        window.draw(support_sprites[i].description);
       }
 
       window.display();
