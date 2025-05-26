@@ -15,6 +15,8 @@ class SupportCard : public EffectCard {
       int bonusChips = 0; 
       int bonusMults = 0;
 
+      texture.loadFromFile("assets/cards/spades_A.png");
+
       switch (rnd) 
       {
         case 0: // common
