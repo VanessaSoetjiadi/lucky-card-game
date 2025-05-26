@@ -255,8 +255,11 @@ class Game {
         sp.scale(0.25,0.25);
         sp.setPosition(x,20);
 
+        sf::Text desc = card->get_description(x,sp.getGlobalBounds().height+30);
+        desc.setFont(font);
+
         x+= sp.getGlobalBounds().width + 20;
-        joker_sprites.push_back({sp,card});
+        joker_sprites.push_back({sp,card,desc});
       }
       
       // draw all
@@ -265,6 +268,7 @@ class Game {
       }
       for (int i = 0; i < joker_sprites.size(); i++) {
         window.draw(joker_sprites[i].sprite);
+        window.draw(joker_sprites[i].description);
       }
 
       window.display();

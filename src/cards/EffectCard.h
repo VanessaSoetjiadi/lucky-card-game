@@ -19,14 +19,12 @@ class EffectCard : public Card {
       return this->texture;
     };
     
-    sf::Text& get_description(int x, int y, sf::Font font) {
+    sf::Text get_description(int x, int y) {
       sf::Text text;
-      text.setFont(font);
-      text.setColor(sf::Color::White);
       text.setCharacterSize(10);
       text.setPosition({x,y});
-      std::string description = "abc";
-      text.setString(description);
+      text.setColor(sf::Color::White);
+      text.setString("abc");
       return text;
     }
 
