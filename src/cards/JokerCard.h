@@ -15,23 +15,21 @@ class JokerCard : public EffectCard {
       int bonusChips = 0; 
       int bonusMults = 0;
 
+      texture.loadFromFile("assets/cards/spades_A.png");
+
       switch (rnd) 
       {
         case 0: // common
           bonusChips = (rand() % 4) + 1;
           bonusMults = (rand() % 4) + 1;
-          texture.loadFromFile("assets/cards/joker_black.png");
           break;
         case 1: // rare
           bonusChips = (rand() % 8) + 1;
           bonusMults = (rand() % 8) + 1;
-          texture.loadFromFile("assets/cards/joker_red.png");
           break;
         case 2: // super rare
           bonusChips = (rand() % 15) + 1;
           bonusMults = (rand() % 15) + 1;
-          
-          texture.loadFromFile("assets/cards/joker_green.png");
           break;
       };
 

@@ -246,6 +246,12 @@ class Game {
         card_sprites.push_back({sp,card});
       };
 
+      // add cards in jkDeck
+      x = 20;
+      for (int i = 0; i < jkDeck.getCurrentCards(); i++) {
+        JokerCard* card = jkDeck.getDeck()[i];
+      }
+      
       // draw all
       for (int i = 0; i < card_sprites.size(); i++) {
         window.draw(card_sprites[i].sprite);
