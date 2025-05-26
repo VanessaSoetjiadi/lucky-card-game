@@ -235,7 +235,9 @@ class Game {
       window.clear(sf::Color::Black);
 
       // add cards in playDeck
-      int x = 20; // border by 20 from left side
+      int x = 20; // a tracker is used for x coord because the size of each card can vary,
+      //             therefore using a multiple of i is not adequate
+      //             this applies to jkDeck and spDeck also
       for (int i = 0; i < playDeck.getCurrentCards(); i++) {
         PlayingCard* card = playDeck.getDeck()[i];
         sf::Sprite sp(card->draw());
@@ -261,6 +263,21 @@ class Game {
         x+= sp.getGlobalBounds().width + 20;
         joker_sprites.push_back({sp,card,desc});
       }
+
+      // add cards in spDeck
+      x = window.getSize().x; // initial x coordinate is the right border
+      for (int i = 0; i < spDeck.getCurrentCards(); i++) {
+        SupportCard* card = spDeck.getDeck()[i];
+        sf::Sprite sp(card->draw());
+        sp.scale(0.25,0.25);
+        x -= (sp.getGlobalBounds().width + 20); // x is iterated before drawing because
+        //                                         these cards fill from the right
+        sp.setPosition(x,20);
+
+        sf::Text desc = card->get_description(x,sp.getGlobalBounds().height+30);
+        desc.setFont(font);
+        support_sprites.push_back({sp,card,desc});
+      }
       
       // draw all
       for (int i = 0; i < card_sprites.size(); i++) {
@@ -269,6 +286,10 @@ class Game {
       for (int i = 0; i < joker_sprites.size(); i++) {
         window.draw(joker_sprites[i].sprite);
         window.draw(joker_sprites[i].description);
+      }
+      for (int i = 0; i < support_sprites.size(); i++) {
+        window.draw(support_sprites[i].sprite);
+        window.draw(support_sprites[i].description);
       }
 
       window.display();

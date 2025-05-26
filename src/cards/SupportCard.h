@@ -37,12 +37,6 @@ class SupportCard : public EffectCard {
       set_bonus_mults(bonusMults);
     };
 
-    // pure virtual functions override
-    sf::Texture& draw() override
-    {
-      
-    };
-
     int randomizer() override 
     {
       int rnd = rand() % 100;
