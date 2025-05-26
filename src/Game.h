@@ -220,6 +220,18 @@ class Game {
                   else {card_sprites[i].card->chosen_true();}
                 }
               }
+              for (int i = 0; i < joker_sprites.size(); i++) {
+                if (joker_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
+                  if (joker_sprites[i].card->get_chosen()) {joker_sprites[i].card->chosen_false();}
+                  else {joker_sprites[i].card->chosen_true();}
+                }
+              }
+              for (int i = 0; i < support_sprites.size(); i++) {
+                if (support_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
+                  if (support_sprites[i].card->get_chosen()) {support_sprites[i].card->chosen_false();}
+                  else {support_sprites[i].card->chosen_true();}
+                }
+              }
             }
           }
           displayAll(playDeck, jkDeck, spDeck);
@@ -232,6 +244,7 @@ class Game {
     void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) {
       card_sprites.clear(); // reset vector of drawables
       joker_sprites.clear();
+      support_sprites.clear();
       window.clear(sf::Color::Black);
 
       // add cards in playDeck
