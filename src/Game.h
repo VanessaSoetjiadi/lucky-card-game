@@ -6,10 +6,26 @@
 #include <algorithm>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <fstream> // for file operations of leaderboard
+#include <iomanip> // for setw of leaderboard
+#include <string> // for string of player name
 
 #include "Hand.h"
 
 using namespace std;
+
+// LeaderboardEntry struct
+struct LeaderboardEntry {
+  string name;
+  int score;
+
+  LeaderboardEntry() : name(""), score(0) {} // Not necessary, but added just in case of game breakage (exception safety)
+  LeaderboardEntry(string n, int s) : name(n), score(s) {} // Adding name and score constructor
+  // Add operator< for sorting
+  bool operator<(const LeaderboardEntry& other) const { // LeaderboardEntry& is used for performance reasons and to avoid unnecessary copies & const is used to avoid modifying the object
+    return score > other.score; // Sorts in descending order
+  }
+};
 
 class Game {
   private:
@@ -17,10 +33,80 @@ class Game {
     int round;
     int difficulty;
     bool lose_status;
-    vector<int> highscores;
+    
+    vector<LeaderboardEntry> highscores; // vector 'highscores' to hold high scores
+    const string leaderboardFile = "leaderboard.txt";
+    const int maxLeaderboardEntries = 10;
+
+    void loadLeaderboard() { // loads the leaderboard from the file & sorts it & clears existing data and duplicates
+      // note: function doesn't have a duplicate name checker as to overwrite the top 10 entries after sorting
+      highscores.clear();
+      ifstream file(leaderboardFile); // instantiate & open file
+      if (file.is_open()) {
+        string line; // Read each line from the file
+        LeaderboardEntry entry;
+        while (file >> entry.name >> entry.score) {
+          highscores.push_back(entry); // adds entry score line by line from file to vector 'highscores'
+        }
+        file.close();
+        sort(highscores.begin(), highscores.end()); // Sort highscores
+        if (highscores.size() > maxLeaderboardEntries) { // if size is greater than 10
+          highscores.resize(maxLeaderboardEntries); // resize vector 'highscores' to 10 to have top 10 entries only
+        }
+        cout << "High scores loaded successfully.\n"; // file open
+      } 
+      else {
+        cout << "Error opening leaderboard file.\n"; // file not open
+      }
+    }
+
+    void saveLeaderboard() { // saves the leaderboard to the file
+      ofstream file(leaderboardFile); // Open the file for writing
+      if (file.is_open()) { // if file is not there, it will be created
+        for (int i = 0; i < highscores.size(); i++) { // Loop each entry
+          file << highscores[i].name << " " << highscores[i].score << "\n"; // Write name and score
+        }
+        file.close();
+      }
+      else {
+        cout << "Error opening leaderboard file for writing.\n";
+      }
+    }
+    
+    void updateLeaderboard(const string& name, int score) {  // Add new entry and check score more than 0
+      if (score < 0) {
+        cout << "Error: Score cannot be negative.\n";
+        return;
+      }
+      highscores.push_back(LeaderboardEntry(name, score)); // add the entry to vector 'highscores'
+      sort(highscores.begin(), highscores.end()); 
+      if (highscores.size() > maxLeaderboardEntries) {
+        highscores.resize(maxLeaderboardEntries);
+      }
+      cout << "High score updated successfully.\n"; // print success message
+      saveLeaderboard();
+    }
+
+    void displayLeaderboard() { // display leaderboard
+      cout << "\n============LEADERBOARD============\n";
+      if (highscores.empty()) { // if vector 'highscores' is empty
+        cout << "No scores recorded yet!\n"; // error message
+        return;
+      } 
+      else {
+        cout << setw(5) << "Rank" << setw(20) << "Name" << setw(10) << "Score" << endl; // print the header
+        cout << ("----------------------------------") << endl; // print the separator
+        for (int i = 0; i < highscores.size(); i++) { // Loop through each entry in the highscores vector
+          cout << setw(5) << (i + 1) << setw(20) << highscores[i].name << setw(10) << highscores[i].score << endl;  // print the rank, name and score
+        }
+      }
+      cout << "====================================\n\n";
+    }
+
   public:
     Game(): round(0), minimumScore(100), difficulty(1)
     {
+      loadLeaderboard(); // Load previous scores when game starts
       // declared outside the switch so that it exists even if 
       JokerDeck jkDeck;
       SupportDeck spDeck;
@@ -45,7 +131,7 @@ class Game {
             runGame(jkDeck, spDeck);
             break;
           case 2:
-            // insert logic for highscore leaderboard show
+            displayLeaderboard(); // displays the leaderboard
             break;
           default:
             break;
@@ -55,7 +141,19 @@ class Game {
 
     void runGame(JokerDeck jkDeck, SupportDeck spDeck) { // game loop
       lose_status = false;
-
+      string playerName;
+      
+      // Get player name with validation
+      while (playerName.empty()) {
+        cout << "Enter your name (max 15 characters, no spaces): ";
+        getline(cin, playerName); // using getline to allow spaces in the name
+        if (playerName.length() > 15 || playerName.find(' ') < playerName.length()) { //if name is long/has spaces
+          cout << "Name Error! Please enter a short name and without any spaces\n";
+          playerName.clear(); //clears name to break the loop & clear() removes all characters from the string by setting its length to 0
+        };
+      };
+      cout << "\n";
+      
       while (lose_status == false) {
         round++;
 
@@ -264,10 +362,11 @@ class Game {
         if (hand.get_handsCount() < 1 && hand.get_totalScore() < minimumScore) 
         {
           cout << "You Lost." << "\n";
-          //highscores.push_back(hand.get_totalScore()); // push the high score?
+          updateLeaderboard(playerName, hand.get_totalScore()); // update the leaderboard with the player's score
           lose_status = true;
         } else {
           cout << "You Win!" << "\n\n";
+          updateLeaderboard(playerName, hand.get_totalScore()); // update the leaderboard with the player's score
         };
       };
     };

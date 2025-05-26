@@ -60,6 +60,8 @@
     "__hash_table": "cpp",
     "__tree": "cpp",
     "map": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "fstream": "cpp",
+    "deque": "cpp"
   }
 }
