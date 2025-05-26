@@ -250,7 +250,8 @@ class Game {
 
       bool can_play = false; //    used to decide if play/discard buttons are rendered
       bool can_discard = false; // in the for loops, if at least one card is chosen, the button will be rendered
-
+      
+      int num_chosen = 0;
       // add cards in playDeck
       int x = 20; // a tracker is used for x coord because the size of each card can vary,
       //             therefore using a multiple of i is not adequate
@@ -260,6 +261,7 @@ class Game {
         sf::Sprite sp(card->draw());
         if (card->get_chosen()) {
           sp.scale(0.3,0.3);
+          num_chosen += 1;
           can_play = true;
           can_discard = true;
         } // scale depends on if card is chosen or not
@@ -269,6 +271,8 @@ class Game {
 
         card_sprites.push_back({sp,card});
       };
+
+      if (num_chosen > 5) {can_play = false;}
 
       // add cards in jkDeck
       x = 20;
