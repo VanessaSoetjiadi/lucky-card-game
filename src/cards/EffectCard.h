@@ -11,7 +11,14 @@ class EffectCard : public Card {
     string rarity;
     int bonus_mults; // multipliers, multiplies the chips to get total score
     int bonus_chips;
+    sf::Texture texture;
   public:
+    // pure virtual functions override
+    sf::Texture& draw() override
+    {     
+      return this->texture;
+    };
+    
     //SETTERS
     void set_bonus_mults(int n) 
     {
