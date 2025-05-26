@@ -15,7 +15,9 @@ class JokerCard : public EffectCard {
       int bonusChips = 0; 
       int bonusMults = 0;
 
-      texture.loadFromFile("assets/cards/spades_A.png");
+      if (!this->texture.loadFromFile("assets/cards/spades_A.png")) {
+        std::cerr << "Failed to load joker texture!" << std::endl;
+      }
 
       switch (rnd) 
       {
@@ -40,12 +42,6 @@ class JokerCard : public EffectCard {
     void subtract_lifespan() // decrease the lifespan by 1
     {
       this->lifeSpan--;
-    };
-
-    // pure virtual functions override
-    sf::Texture& draw() override
-    {
-      
     };
 
     int randomizer() override // randomizer for card rarity
