@@ -13,6 +13,15 @@ class EffectCard : public Card {
     int bonus_chips;
     sf::Texture texture;
   public:
+
+    void chosen_true() // set bool to true if picked
+    {
+      this->chosen = true;
+    };
+
+    void chosen_false() {
+      this->chosen = false;
+    };
     // pure virtual functions override
     sf::Texture& draw() override
     {     
@@ -61,6 +70,11 @@ class EffectCard : public Card {
     int get_bonus_mults() 
     {
       return this->bonus_mults; // return the bonus mults of the effect card
+    };
+
+    bool get_chosen() 
+    {
+      return this->chosen;
     };
 
     ~EffectCard() {};

@@ -11,6 +11,7 @@ class JokerCard : public EffectCard {
     {
       int rnd = randomizer();
       this->rarity = Rarity[rnd];
+      this->chosen = false;
 
       int bonusChips = 0; 
       int bonusMults = 0;

@@ -254,7 +254,8 @@ class Game {
       for (int i = 0; i < jkDeck.getCurrentCards(); i++) {
         JokerCard* card = jkDeck.getDeck()[i];
         sf::Sprite sp(card->draw());
-        sp.scale(0.25,0.25);
+        if (card->get_chosen()) {sp.scale(0.3,0.3);} // scale depends on if card is chosen or not
+        else {sp.scale(0.25,0.25);}
         sp.setPosition(x,20);
 
         sf::Text desc = card->get_description(x,sp.getGlobalBounds().height+30);
@@ -269,7 +270,8 @@ class Game {
       for (int i = 0; i < spDeck.getCurrentCards(); i++) {
         SupportCard* card = spDeck.getDeck()[i];
         sf::Sprite sp(card->draw());
-        sp.scale(0.25,0.25);
+        if (card->get_chosen()) {sp.scale(0.3,0.3);} // scale depends on if card is chosen or not
+        else {sp.scale(0.25,0.25);}
         x -= (sp.getGlobalBounds().width + 20); // x is iterated before drawing because
         //                                         these cards fill from the right
         sp.setPosition(x,20);
