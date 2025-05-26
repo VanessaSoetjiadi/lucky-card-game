@@ -17,6 +17,18 @@ struct CardSprite {
   PlayingCard* card;
 };
 
+struct JokerSprite {
+  sf::Sprite sprite;
+  JokerCard* card;
+  sf::Text description;
+};
+
+struct SupportSprite {
+  sf::Sprite sprite;
+  SupportCard* card;
+  sf::Text description;
+};
+
 class Game {
   private:
     int minimumScore;
@@ -26,7 +38,9 @@ class Game {
     vector<int> highscores;
     sf::RenderWindow window;
     sf::Font font;
-    vector<CardSprite> card_sprites; // vector of every item on screen to be drawn, including sprites, text, and simple shapes
+    vector<CardSprite> card_sprites; // vector of playing cards
+    vector<JokerSprite> joker_sprites; // vector of jokers
+    vector<SupportSprite> support_sprites; // vector of supports. note - support cards don't actually use a unique sprite, just text on placeholder sprite
   public:
     // constructor
     Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
@@ -69,8 +83,8 @@ class Game {
     // user chooses what they would like to do
     int getChoice(std::string title_string,int num_options,std::string strings[],sf::Color colours[]) {
       // create graphics for menu buttons
-      int b_width = 200;
-      int b_height = 30;
+      float b_width = 200;
+      float b_height = 30;
       std::vector<sf::RectangleShape> menu_buttons;
       std::vector<sf::Text> menu_texts;
       for (int i = 0; i < num_options; i++) {
@@ -219,7 +233,7 @@ class Game {
       card_sprites.clear(); // reset vector of drawables
       window.clear(sf::Color::Black);
 
-      // add cards in hand
+      // add cards in playDeck
       int x = 20; // border by 20 from left side
       for (int i = 0; i < playDeck.getCurrentCards(); i++) {
         PlayingCard* card = playDeck.getDeck()[i];
