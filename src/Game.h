@@ -223,22 +223,19 @@ class Game {
               // render playing cards
               for (int i = 0; i < card_sprites.size(); i++) { // for each playing card
                 if (card_sprites[i].sprite.getGlobalBounds().contains(mousePos)) { // if mouse is over the card
-                  if (card_sprites[i].card->get_chosen()) {card_sprites[i].card->chosen_false();} // toggle the card's chosen state
-                  else {card_sprites[i].card->chosen_true();}
+                  card_sprites[i].card->choose(); // toggle the card's chosen state
                 }
               }
               // same for jokers
               for (int i = 0; i < joker_sprites.size(); i++) {
                 if (joker_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
-                  if (joker_sprites[i].card->get_chosen()) {joker_sprites[i].card->chosen_false();}
-                  else {joker_sprites[i].card->chosen_true();}
+                  joker_sprites[i].card->choose();
                 }
               }
               // same for supports
               for (int i = 0; i < support_sprites.size(); i++) {
                 if (support_sprites[i].sprite.getGlobalBounds().contains(mousePos)) {
-                  if (support_sprites[i].card->get_chosen()) {support_sprites[i].card->chosen_false();}
-                  else {support_sprites[i].card->chosen_true();}
+                  support_sprites[i].card->choose();
                 }
               }
               // render buttons
@@ -248,7 +245,7 @@ class Game {
                     playDeck.discardCard(0); // test
                   }
                   else if (buttons[i].type == "discard") {
-                    playDeck.discardCard(0); // test
+                    playDeck.discardCard(1); // test
                   }
                 }
               }
@@ -266,6 +263,7 @@ class Game {
       card_sprites.clear(); // reset vector of drawables
       joker_sprites.clear();
       support_sprites.clear();
+      buttons.clear();
       window.clear(sf::Color::Black);
 
       bool can_play = false; //    used to decide if play/discard buttons are rendered

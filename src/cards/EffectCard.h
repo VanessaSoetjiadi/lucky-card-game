@@ -13,15 +13,16 @@ class EffectCard : public Card {
     int bonus_chips;
     sf::Texture texture;
   public:
-
-    void chosen_true() // set bool to true if picked
+    void choose() // toggle chosen value
+    {
+      chosen = !chosen;
+    };
+    
+    void chosen_true() // positive-only choose
     {
       this->chosen = true;
     };
 
-    void chosen_false() {
-      this->chosen = false;
-    };
     // pure virtual functions override
     sf::Texture& draw() override
     {     

@@ -34,13 +34,14 @@ class PlayingCard : public Card {
       texture.loadFromFile(path);
     };
 
-    void chosen_true() // set bool to true if picked
+    void choose() // set bool to true if picked
     {
-      this->chosen = true;
+      chosen = !chosen;
     };
 
-    void chosen_false() {
-      this->chosen = false;
+    void chosen_true() // positive-only choose
+    {
+      this->chosen = true;
     };
 
     // pure virtual functions override
