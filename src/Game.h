@@ -454,6 +454,7 @@ class Game {
                     pickSupportCards(indexes.support_cards, spDeck);
                     most_recent = hand.calculateTotalScore(playDeck, jkDeck, spDeck);
                     playDeck.makeDeck(initialDeck);
+                    hand.subtract_handsCount();
                   }
                   else if (buttons[i].type == "discard") {
                     hand.discardPlayingCards(playDeck);
