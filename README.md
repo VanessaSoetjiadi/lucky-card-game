@@ -7,7 +7,7 @@ Lucky Card Game is a turn-based, poker-inspired card game that is designed for p
 Use the package manager git clone to install lucky card game.
 
 ```bash
-git clone https://(https://github.com/Vyexs/lucky-card-game.git)
+git clone https://github.com/VanessaSoetjiadi/lucky-card-game.git
 ```
 
 ## Contributions Change Log
