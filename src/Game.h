@@ -685,10 +685,10 @@ class Game {
       sf::Text most_recent_text;
       most_recent_text.setFillColor(sf::Color::White);
       most_recent_text.setFont(font);
-      most_recent_text.setCharacterSize(10);
+      most_recent_text.setCharacterSize(15);
       most_recent_text.setString(most_recent);
-      float g = (window.getSize().x - most_recent_text.getGlobalBounds().width) /2;
-      float h = (window.getSize().y - most_recent_text.getGlobalBounds().height + score_text.getGlobalBounds().height) /2 + 20;
+      float g = (window.getSize().x - score_text.getGlobalBounds().width) /2;
+      float h = (window.getSize().y - score_text.getGlobalBounds().height) /2 + score_text.getGlobalBounds().height + 5;
       most_recent_text.setPosition({g,h});
       window.draw(most_recent_text);
     

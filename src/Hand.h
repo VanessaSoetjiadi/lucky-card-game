@@ -204,23 +204,29 @@ class Hand {
 
     std::string calculateTotalScore(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) // when the hand button is pressed
     {
-      std::string out = "";
-      add_handsCount(playDeck);
-      add_discardsCount(playDeck);
+      std::string added_hands = add_handsCount(playDeck);
+      std::string added_discards = add_discardsCount(playDeck);
 
-      out += "You played: " + calculateHandsPoints(checkHandType(playDeck)) + " | ";
-      out += "Bonuses obtained from Hands: Chips: " + std::to_string(totalChips) + ", Mults: " + std::to_string(totalMults) + "\n";
-
-      out += "Total chips from cards: " + std::to_string(calculateChips(playDeck)) + " | ";
+      std::string hand_type = calculateHandsPoints(checkHandType(playDeck));
+      std::string hand_chips = std::to_string(totalChips);
+      std::string hand_mults = std::to_string(totalMults);
       vector<int> fx = calculateEffectsCards(jkDeck, spDeck);
-      out += "Bonuses from effects cards: " + std::to_string(fx[0]) + " chips, " + std::to_string(fx[1]) + " mults\n" ;
+      std::string fx_chips = std::to_string(fx[0]);
+      std::string fx_mults = std::to_string(fx[1]);
 
       discardPlayingCards(playDeck);
       autoDiscardEffectsCards(jkDeck, spDeck);
 
-      out+= "Total Chips x Total Mults: " + std::to_string(totalChips) + " x " + std::to_string(totalMults) + "\n";
+      std::string total_chips = std::to_string(totalChips);
+      std::string total_mults = std::to_string(totalMults);
       this->totalScore = this->totalChips*this->totalMults;
+      std::string total_score = std::to_string(totalScore);
 
+      std::string out = "You played a " + hand_type + ", worth ";
+      out += hand_chips + " chips and " + hand_mults + " mults.\n";
+      out += "Jokers/Items added " + fx_chips + " chips and " + fx_mults + " mults.\n";
+      out += "Score: " + total_chips + " chips x " + total_mults + " mults = " + total_score;
+      out += added_hands + added_discards;
       return out;
       handsCount--;
     };
@@ -264,30 +270,36 @@ class Hand {
       };
     };
 
-    void add_handsCount (PlayingDeck& playDeck) // adds bonus hand count from the color of the cards (black)
+    std::string add_handsCount (PlayingDeck& playDeck) // adds bonus hand count from the color of the cards (black)
     {
       for (int i = 0; i < playDeck.getCurrentCards(); i++) 
       {
         if (playDeck.getDeck()[i]->get_chosen() == true) 
         {
           if (playDeck.getDeck()[i]->get_color().compare(CardColor[1]) == 0) {
-            cout << playDeck.getDeck()[i]->get_suit() << playDeck.getDeck()[i]->get_rank() << " was a black card | Bonus hand turn has been added" << endl;
+            return "\nStar card " + playDeck.getDeck()[i]->get_rank() + " of " +playDeck.getDeck()[i]->get_suit() + "s added a bonus hand";
             this->handsCount++;
+          }
+          else {
+            return "";
           };
         };
       };
     };
 
-    void add_discardsCount (PlayingDeck& playDeck) // adds bonus discard count from the color of the cards (blue)
+    std::string add_discardsCount (PlayingDeck& playDeck) // adds bonus discard count from the color of the cards (blue)
     {
       for (int i = 0; i < playDeck.getCurrentCards(); i++) 
       {
         if (playDeck.getDeck()[i]->get_chosen()) 
         { 
           if (playDeck.getDeck()[i]->get_color().compare(CardColor[2]) == 0) {
-            cout << playDeck.getDeck()[i]->get_suit() << playDeck.getDeck()[i]->get_rank() << " was a blue card | Bonus discards has been added" << endl;
+            return "\nStar card " + playDeck.getDeck()[i]->get_rank() + " of " + playDeck.getDeck()[i]->get_suit() + "s added a bonus discard.";
             this->discardsCount++;
-          };
+          }
+          else {
+            return "";
+          }
         };
       };
     };
