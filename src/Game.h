@@ -373,8 +373,8 @@ class Game {
         sf::RectangleShape play_rect;
         play_rect.setFillColor(sf::Color::Green);
         play_rect.setSize({80,30});
-        int a = window.getSize().x - 100;
-        int b = window.getSize().y - 100;
+        float a = window.getSize().x - 100;
+        float b = window.getSize().y - 90;
         play_rect.setPosition({a,b});
         // create text
         sf::Text play_text;
@@ -395,8 +395,8 @@ class Game {
         sf::RectangleShape discard_rect;
         discard_rect.setFillColor(sf::Color::Red);
         discard_rect.setSize({80,30});
-        int a = window.getSize().x - 100;
-        int b = window.getSize().y - 50;
+        float a = window.getSize().x - 100;
+        float b = window.getSize().y - 50;
         discard_rect.setPosition({a,b});
         // text
         sf::Text discard_text;
@@ -410,6 +410,43 @@ class Game {
         window.draw(discard_rect);
         window.draw(discard_text);
       }
+
+      // sort buttons
+      sf::RectangleShape sort_ranks_rect;
+      sort_ranks_rect.setFillColor(sf::Color::Yellow);
+      sort_ranks_rect.setSize({40,30});
+      float a = window.getSize().x - 100;
+      float b = window.getSize().y - 130;
+      sort_ranks_rect.setPosition({a,b});
+      // text
+      sf::Text sort_ranks_text;
+      sort_ranks_text.setFillColor(sf::Color::Black);
+      sort_ranks_text.setFont(font);
+      sort_ranks_text.setCharacterSize(10);
+      sort_ranks_text.setPosition({a,b});
+      sort_ranks_text.setString("Sort by\nRank");
+      // add to vector and draw
+      buttons.push_back({sort_ranks_rect,"sort_ranks"});
+      window.draw(sort_ranks_rect);
+      window.draw(sort_ranks_text);
+
+      sf::RectangleShape sort_suits_rect;
+      sort_suits_rect.setFillColor(sf::Color::Cyan);
+      sort_suits_rect.setSize({40,30});
+      float c = window.getSize().x - 60;
+      float d = window.getSize().y - 130;
+      sort_suits_rect.setPosition({c,d});
+      // text
+      sf::Text sort_suits_text;
+      sort_suits_text.setFillColor(sf::Color::Black);
+      sort_suits_text.setFont(font);
+      sort_suits_text.setCharacterSize(10);
+      sort_suits_text.setPosition({c,d});
+      sort_suits_text.setString("Sort by\nSuits");
+      // add to vector and draw
+      buttons.push_back({sort_suits_rect,"sort_suits"});
+      window.draw(sort_suits_rect);
+      window.draw(sort_suits_text);
 
       window.display();
     }
