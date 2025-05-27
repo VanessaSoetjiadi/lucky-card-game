@@ -16,21 +16,28 @@ class SupportCard : public EffectCard {
       int bonusChips = 0; 
       int bonusMults = 0;
 
-      texture.loadFromFile("assets/cards/spades_A.png");
-
       switch (rnd) 
       {
         case 0: // common
           bonusChips = (rand() % 4) + 1;
           bonusMults = (rand() % 4) + 1;
+          if (!this->texture.loadFromFile("assets/cards/fish.png")) {
+            std::cerr << "Failed to load support texture!" << std::endl;
+          }
           break;
         case 1: // rare
           bonusChips = (rand() % 8) + 1;
           bonusMults = (rand() % 8) + 1;
+          if (!this->texture.loadFromFile("assets/cards/frog.png")) {
+            std::cerr << "Failed to load support texture!" << std::endl;
+          }
           break;
         case 2: // super rare
           bonusChips = (rand() % 15) + 1;
           bonusMults = (rand() % 15) + 1;
+          if (!this->texture.loadFromFile("assets/cards/astronaut.png")) {
+            std::cerr << "Failed to load joker texture!" << std::endl;
+          }
           break;
       };
 

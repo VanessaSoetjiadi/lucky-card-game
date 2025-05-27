@@ -35,7 +35,7 @@ class JokerCard : public EffectCard {
         case 2: // super rare
           bonusChips = (rand() % 15) + 1;
           bonusMults = (rand() % 15) + 1;
-          if (!this->texture.loadFromFile("assets/cards/spades_A.png")) {
+          if (!this->texture.loadFromFile("assets/cards/joker_green.png")) {
             std::cerr << "Failed to load joker texture!" << std::endl;
           }
           break;
