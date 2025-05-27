@@ -180,7 +180,6 @@ class Hand {
       {
         this->totalChips += jkDeck.getDeck()[i]->get_bonus_chips();
         this->totalMults += jkDeck.getDeck()[i]->get_bonus_mults();
-        jkDeck.getDeck()[i];
         totalChipstemp += jkDeck.getDeck()[i]->get_bonus_chips();
         totalMultstemp += jkDeck.getDeck()[i]->get_bonus_mults();
         jkDeck.getDeck()[i]->subtract_lifespan();

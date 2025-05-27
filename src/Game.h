@@ -158,7 +158,8 @@ class Game {
         window.draw(title);
         window.display();
       }
-};
+      return 0; // if the window closes, return the first option by default
+    };
 
     // temporary function 'sfml_runGame()' to replace 'runGame()' during sfml development
     void sfml_runGame(JokerDeck jkDeck, SupportDeck spDeck) {

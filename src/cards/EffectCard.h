@@ -37,11 +37,11 @@ class EffectCard : public Card {
       return desc;
     }
 
-    sf::Text get_description(int x, int y) {
+    sf::Text get_description(float x, float y) {
       sf::Text text;
       text.setCharacterSize(10);
       text.setPosition({x,y});
-      text.setColor(sf::Color::White);
+      text.setFillColor(sf::Color::White);
       text.setString(this->get_text_description());
       return text;
     }
