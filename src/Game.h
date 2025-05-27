@@ -247,8 +247,8 @@ class Game {
             if (event.text.unicode == '\b' && !playerName.empty()) {
               playerName.pop_back();
             }
-            // Space, newline, return, tab and 15 characters limit and unicode 64 to 90
-            else if (event.text.unicode > 64 && event.text.unicode < 123 && playerName.length() < 15 && event.text.unicode != ' ' && event.text.unicode != '\n' && event.text.unicode != '\r' && event.text.unicode != '\t') {
+            // Space, newline, return, tab and 15 characters limit and alphabet characters only
+            else if ((event.text.unicode > 64 && event.text.unicode < 91 || event.text.unicode > 96 && event.text.unicode < 123) && playerName.length() < 15 && event.text.unicode != ' ' && event.text.unicode != '\n' && event.text.unicode != '\r' && event.text.unicode != '\t') {
               playerName += static_cast<char>(event.text.unicode);
             }
             nameInput.setString(playerName);
