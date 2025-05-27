@@ -459,6 +459,7 @@ class Game {
                     hand.discardPlayingCards(playDeck);
                     hand.manualDiscardEffectsCards(indexes.joker_cards, jkDeck);
                     hand.manualDiscardEffectsCards(indexes.support_cards, spDeck);
+                    playDeck.makeDeck(initialDeck);
                   }
                   else if (buttons[i].type == "sort_ranks") {
                     playDeck.sortInRanks();
