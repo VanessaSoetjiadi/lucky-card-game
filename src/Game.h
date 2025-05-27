@@ -249,7 +249,7 @@ class Game {
 
               IndexSet indexes = getChosenIndexes(); // get indexes of chosen cards, which informs behaviour of play/discard buttons
 
-              // render buttons
+              // detect buttons
               for (int i = 0; i < buttons.size(); i++) {
                 if (buttons[i].rectangle.getGlobalBounds().contains(mousePos)) {
                   if (buttons[i].type == "play") {
@@ -260,6 +260,12 @@ class Game {
                     hand.discardPlayingCards(playDeck);
                     hand.manualDiscardEffectsCards(indexes.joker_cards, jkDeck);
                     hand.manualDiscardEffectsCards(indexes.support_cards, spDeck);
+                  }
+                  else if (buttons[i].type == "sort_ranks") {
+                    playDeck.sortInRanks();
+                  }
+                  else if (buttons[i].type == "sort_suits") {
+                    playDeck.sortInSuits();
                   }
                 }
               }
