@@ -34,6 +34,12 @@ struct Button {
   std::string type;
 };
 
+struct IndexSet {
+  std::string playing_cards;
+  std::string joker_cards;
+  std::string support_cards;
+};
+
 class Game {
   private:
     int minimumScore;
@@ -213,6 +219,8 @@ class Game {
 
         // game loop
         while (window.isOpen()) { // forever loop
+          displayAll(playDeck, jkDeck, spDeck); // display everything and get indexes of chosen cards
+
           sf::Event event;
           while (window.pollEvent(event)) { // get event from sfml
             if (event.type == sf::Event::Closed) { // close button
@@ -242,7 +250,10 @@ class Game {
               for (int i = 0; i < buttons.size(); i++) {
                 if (buttons[i].rectangle.getGlobalBounds().contains(mousePos)) {
                   if (buttons[i].type == "play") {
-                    playDeck.discardCard(0); // test
+                    IndexSet indexes = getChosenIndexes();
+                    cout << "Playing cards: " << indexes.playing_cards << " | ";
+                    cout << "Joker cards: " << indexes.joker_cards << " | ";
+                    cout << "Support cards: " << indexes.support_cards << endl;
                   }
                   else if (buttons[i].type == "discard") {
                     playDeck.discardCard(1); // test
@@ -251,14 +262,24 @@ class Game {
               }
             }
           }
-
-          displayAll(playDeck, jkDeck, spDeck);
         }
-
+      }
     }
-  }
 
-
+    IndexSet getChosenIndexes() {
+        IndexSet indexes;
+        for (int i = 0; i < card_sprites.size(); i++)
+            if (card_sprites[i].card->get_chosen())
+                indexes.playing_cards += std::to_string(i);
+        for (int i = 0; i < joker_sprites.size(); i++)
+            if (joker_sprites[i].card->get_chosen())
+                indexes.joker_cards += std::to_string(i);
+        for (int i = 0; i < support_sprites.size(); i++)
+            if (support_sprites[i].card->get_chosen())
+                indexes.support_cards += std::to_string(i);
+        return indexes;
+    }  
+    // display everything and return the index of currently chosen cards
     void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) {
       card_sprites.clear(); // reset vector of drawables
       joker_sprites.clear();
