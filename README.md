@@ -11,10 +11,11 @@ git clone https://(https://github.com/Vyexs/lucky-card-game.git)
 ```
 
 ## Contributions Change Log
-- [#19] Unit testing of the logics [Vanessa, Sam]
+- [#20] Unit testing of the logics [Vanessa, Sam]
 
 SFML Implementation related commits
-- [#18] Remove terminal aspects [Isaac]
+- [#19] SFML Game complete implementation [Isaac]
+- [#18] Leaderboard Implementation and functionalities [Sam]
 - [#17] Round loop implementation [Isaac]
 - [#16] Fixed compiler warnings [Isaac]
 - [#15] Make Sort buttons, add sorting functionality [Isaac]
