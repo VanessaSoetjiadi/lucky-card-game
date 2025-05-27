@@ -7,27 +7,31 @@ Lucky Card Game is a turn-based, poker-inspired card game that is designed for p
 Use the package manager git clone to install lucky card game.
 
 ```bash
-git clone https://
+git clone https://(https://github.com/Vyexs/lucky-card-game.git)
 ```
 
 ## Contributions Change Log
-[#19] Unit testing of the logics [Vanessa, Sam]
-[#18] Remove terminal aspects [Isaac]
-[#17] Round loop implementation [Isaac]
-[#16] Fixed compiler warnings [Isaac]
-[#15] Make Sort buttons, add sorting functionality [Isaac]
-[#14] Play button functionalities (Play button play Cards, Discard button discard Cards) [Isaac]
-[#13] Conditional Play/Discard button rendering (play button visibility logic (>5 cards)) [Isaac]
-[#12] Play/Discard button renderingm, button click detection system [Isaac]
-[#11] Full Card click functionality [Isaac]
-[#10] EffectsCard rendering [Isaac]
-[#9] EffectsCard (Joker, Support) textures, description, display generation [Isaac]
-[#8] Bug fixes and error resolutions [Sam]
-[#7] SFML window, Main menu, Play Buttons functionalities [Isaac]
-[#6] Text prototype completion - Game loop [Vanessa]
-[#5] Hand, Game classes completion [Vanessa]
-[#4] JokerCard, JokerDeck, EffectsCard abstract class class completion [Sam]
-[#3] File structure Deck class completion [Sam]
-[#2] PlayingCard, PlayingDeck, InitDeck class completion [Vanessa]
-[#1] Deck, SupportCard, SupportDeck class completion [Sam]
-[#0] Project initialization [Vanessa]
+- [#19] Unit testing of the logics [Vanessa, Sam]
+
+SFML Implementation related commits
+- [#18] Remove terminal aspects [Isaac]
+- [#17] Round loop implementation [Isaac]
+- [#16] Fixed compiler warnings [Isaac]
+- [#15] Make Sort buttons, add sorting functionality [Isaac]
+- [#14] Play button functionalities (Play button play Cards, Discard button discard Cards) [Isaac]
+- [#13] Conditional Play/Discard button rendering (play button visibility logic (>5 cards)) [Isaac]
+- [#12] Play/Discard button renderingm, button click detection system [Isaac]
+- [#11] Full Card click functionality [Isaac]
+- [#10] EffectsCard rendering [Isaac]
+- [#9] EffectsCard (Joker, Support) textures, description, display generation [Isaac]
+- [#8] Bug fixes and error resolutions [Sam]
+- [#7] SFML window, Main menu, Play Buttons functionalities [Isaac]
+
+Logic related commits
+- [#6] Text prototype completion - Game loop [Vanessa]
+- [#5] Hand, Game classes completion [Vanessa]
+- [#4] JokerCard, JokerDeck, EffectsCard abstract class class completion [Sam]
+- [#3] Abstract classes (Deck, AbstractPlayingDeck, AbstractEffectsDeck) completion [Sam]
+- [#2] PlayingCard, PlayingDeck, InitDeck class completion [Vanessa]
+- [#1] Deck, SupportCard, SupportDeck class completion [Sam]
+- [#0] Project initialization [Vanessa]
