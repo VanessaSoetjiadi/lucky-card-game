@@ -171,7 +171,7 @@ class Game {
         // get input for difficulty
         std::string diff_strings[3] = {"Easy","Medium","Difficult"};
         sf::Color diff_colours[3] = {sf::Color::White,sf::Color::White,sf::Color::White};
-        int d = getChoice("Select Difficulty",3,diff_strings,diff_colours);
+        int d = getChoice("Round " + std::to_string(round) +": Select Difficulty",3,diff_strings,diff_colours);
         if (!window.isOpen()) {return;} // ensure window is still open before continuing
 
         switch(d) // determining the minimum score based on the difficulty chosen
@@ -219,8 +219,8 @@ class Game {
         playDeck.makeDeck(initialDeck);
 
         // game loop
-        while (window.isOpen()) { // forever loop
-          displayAll(playDeck, jkDeck, spDeck); // display everything and get indexes of chosen cards
+        while (window.isOpen() && hand.get_handsCount() > 0 && hand.get_totalScore() < minimumScore) { // while the round is still going
+          displayAll(playDeck, jkDeck, spDeck, hand.get_totalScore(), hand.get_handsCount()); // display everything
 
           sf::Event event;
           while (window.pollEvent(event)) { // get event from sfml
@@ -273,6 +273,15 @@ class Game {
             }
           }
         }
+        // after round ends
+        if (hand.get_handsCount() < 1 && hand.get_totalScore() < minimumScore) 
+        {
+          cout << "You Lost." << "\n";
+          //highscores.push_back(hand.get_totalScore()); // push the high score?
+          lose_status = true;
+        } else {
+          cout << "You Win!" << "\n\n";
+        };
       }
     }
 
@@ -290,7 +299,7 @@ class Game {
         return indexes;
     }  
     // display everything and return the index of currently chosen cards
-    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) {
+    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck, int current_score, int hands_remaining) {
       card_sprites.clear(); // reset vector of drawables
       joker_sprites.clear();
       support_sprites.clear();
@@ -455,6 +464,18 @@ class Game {
       window.draw(sort_suits_rect);
       window.draw(sort_suits_text);
 
+      // create and draw score text
+      sf::Text score_text;
+      score_text.setFillColor(sf::Color::White);
+      score_text.setFont(font);
+      score_text.setCharacterSize(30);
+      std::string score_string = "Score: " + std::to_string(current_score) + "/" + std::to_string(minimumScore) + " required\n" + std::to_string(hands_remaining) + " hands remaining";
+      score_text.setString(score_string);
+      float e = (window.getSize().x - score_text.getGlobalBounds().width) /2;
+      float f = (window.getSize().y - score_text.getGlobalBounds().height) /2;
+      score_text.setPosition({e,f});
+      window.draw(score_text);
+    
       window.display();
     }
 
