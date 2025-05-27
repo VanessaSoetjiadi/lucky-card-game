@@ -22,7 +22,7 @@ class Hand {
   public:
     Hand(): maximumNumCards(5), totalChips(0), totalMults(1), totalScore(0), handsCount(4), discardsCount(2) {};
 
-    void calculateChips (PlayingDeck& playDeck) // calculating the total chips received from the hand played
+    int calculateChips (PlayingDeck& playDeck) // calculating the total chips received from the hand played
     {
       int sum = 0;
       for (int i = 0; i < playDeck.getCurrentCards(); i++) 
@@ -33,7 +33,7 @@ class Hand {
           sum += playDeck.getDeck()[i]->get_chips();
         };
       };
-      cout << "Total chips from cards: " << sum << " | ";
+      return sum;
     };
 
     int checkHandType(PlayingDeck& playDeck) // checking the hand type
@@ -171,7 +171,7 @@ class Hand {
       };
     };
 
-    void calculateEffectsCards(JokerDeck& jkDeck, SupportDeck& spDeck) // calculating the total bonus effects received from the effects cards
+    vector<int> calculateEffectsCards(JokerDeck& jkDeck, SupportDeck& spDeck) // calculating the total bonus effects received from the effects cards
     {
       int totalChipstemp = 0;
       int totalMultstemp = 0;
@@ -196,26 +196,32 @@ class Hand {
         };
       };
 
-      cout << "Bonuses obtained from effects cards: Chips: " << totalChipstemp << ", Mults: " << totalMultstemp << "\n";
+      vector<int> out;
+      out.push_back(totalChipstemp);
+      out.push_back(totalMultstemp);
+      return out;
     };
 
-    void calculateTotalScore(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) // when the hand button is pressed
+    std::string calculateTotalScore(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck) // when the hand button is pressed
     {
+      std::string out = "";
       add_handsCount(playDeck);
       add_discardsCount(playDeck);
 
-      cout << "You played: " << calculateHandsPoints(checkHandType(playDeck)) << " | ";
-      cout << "Bonuses obtained from Hands: Chips: " << totalChips << ", Mults: " << totalMults << " | ";
+      out += "You played: " + calculateHandsPoints(checkHandType(playDeck)) + " | ";
+      out += "Bonuses obtained from Hands: Chips: " + std::to_string(totalChips) + ", Mults: " + std::to_string(totalMults) + "\n";
 
-      calculateChips(playDeck);
-      calculateEffectsCards(jkDeck, spDeck);
+      out += "Total chips from cards: " + std::to_string(calculateChips(playDeck)) + " | ";
+      vector<int> fx = calculateEffectsCards(jkDeck, spDeck);
+      out += "Bonuses from effects cards: " + std::to_string(fx[0]) + " chips, " + std::to_string(fx[1]) + " mults\n" ;
 
       discardPlayingCards(playDeck);
       autoDiscardEffectsCards(jkDeck, spDeck);
 
-      cout << "Total Chips x Total Mults: " << totalChips << " x " << totalMults << "\n";
+      out+= "Total Chips x Total Mults: " + std::to_string(totalChips) + " x " + std::to_string(totalMults) + "\n";
       this->totalScore = this->totalChips*this->totalMults;
 
+      return out;
       handsCount--;
     };
 

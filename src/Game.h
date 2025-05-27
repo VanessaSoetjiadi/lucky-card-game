@@ -218,9 +218,11 @@ class Game {
 
         playDeck.makeDeck(initialDeck);
 
+        std::string most_recent = ""; // string used to display the result of the most recent hand
+
         // game loop
         while (window.isOpen() && hand.get_handsCount() > 0 && hand.get_totalScore() < minimumScore) { // while the round is still going
-          displayAll(playDeck, jkDeck, spDeck, hand.get_totalScore(), hand.get_handsCount()); // display everything
+          displayAll(playDeck, jkDeck, spDeck, hand.get_totalScore(), hand.get_handsCount(), most_recent); // display everything
 
           sf::Event event;
           while (window.pollEvent(event)) { // get event from sfml
@@ -255,7 +257,7 @@ class Game {
                 if (buttons[i].rectangle.getGlobalBounds().contains(mousePos)) {
                   if (buttons[i].type == "play") {
                     pickSupportCards(indexes.support_cards, spDeck);
-                    hand.calculateTotalScore(playDeck, jkDeck, spDeck);
+                    most_recent = hand.calculateTotalScore(playDeck, jkDeck, spDeck);
                   }
                   else if (buttons[i].type == "discard") {
                     hand.discardPlayingCards(playDeck);
@@ -276,11 +278,19 @@ class Game {
         // after round ends
         if (hand.get_handsCount() < 1 && hand.get_totalScore() < minimumScore) 
         {
-          cout << "You Lost." << "\n";
+          std::string display = "Round lost.";
+          std::string strings[1] = {"Continue"};
+          sf::Color colours[1] = {sf::Color::White};
+          getChoice(display,1,strings,colours); // this function will return an int, but we don't need it, we only need to wait for the return
+          if (!window.isOpen()) {return;} // ensure window is still open before continuing
           //highscores.push_back(hand.get_totalScore()); // push the high score?
           lose_status = true;
         } else {
-          cout << "You Win!" << "\n\n";
+          std::string display = "Round won!";
+          std::string strings[1] = {"Continue"};
+          sf::Color colours[1] = {sf::Color::White};
+          getChoice(display,1,strings,colours); // this function will return an int, but we don't need it, we only need to wait for the return
+          if (!window.isOpen()) {return;} // ensure window is still open before continuing
         };
       }
     }
@@ -299,7 +309,7 @@ class Game {
         return indexes;
     }  
     // display everything and return the index of currently chosen cards
-    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck, int current_score, int hands_remaining) {
+    void displayAll(PlayingDeck& playDeck, JokerDeck& jkDeck, SupportDeck& spDeck, int current_score, int hands_remaining, std::string most_recent) {
       card_sprites.clear(); // reset vector of drawables
       joker_sprites.clear();
       support_sprites.clear();
@@ -475,6 +485,17 @@ class Game {
       float f = (window.getSize().y - score_text.getGlobalBounds().height) /2;
       score_text.setPosition({e,f});
       window.draw(score_text);
+
+      // create and draw most recent text
+      sf::Text most_recent_text;
+      most_recent_text.setFillColor(sf::Color::White);
+      most_recent_text.setFont(font);
+      most_recent_text.setCharacterSize(10);
+      most_recent_text.setString(most_recent);
+      float g = (window.getSize().x - most_recent_text.getGlobalBounds().width) /2;
+      float h = (window.getSize().y - most_recent_text.getGlobalBounds().height + score_text.getGlobalBounds().height) /2 + 20;
+      most_recent_text.setPosition({g,h});
+      window.draw(most_recent_text);
     
       window.display();
     }
