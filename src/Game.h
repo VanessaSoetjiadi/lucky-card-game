@@ -6,10 +6,23 @@
 #include <algorithm>
 #include <SFML/Graphics.hpp>
 #include <vector>
-
+#include <fstream> // for file operations of leaderboard
+#include <string> // for string of player name
 #include "Hand.h"
 
 using namespace std;
+
+// LeaderboardEntry struct
+struct LeaderboardEntry {
+  string name;
+  int score;
+
+  LeaderboardEntry() : name(""), score(0) {}
+  LeaderboardEntry(string n, int s) : name(n), score(s) {}
+  bool operator<(const LeaderboardEntry& other) const {
+    return score > other.score;
+  }
+};
 
 // used to allow detection of clicking on the sprite
 struct CardSprite {
@@ -46,28 +59,21 @@ class Game {
     int round;
     int difficulty;
     bool lose_status;
-    vector<int> highscores;
+    vector<LeaderboardEntry> highscores;
+    const string leaderboardFile = "leaderboard.txt";
+    const int maxLeaderboardEntries = 10;
+    string playerName;
+    bool nameEntered;
     sf::RenderWindow window;
     sf::Font font;
     vector<CardSprite> card_sprites; // vector of playing cards
     vector<JokerSprite> joker_sprites; // vector of jokers
     vector<SupportSprite> support_sprites; // vector of supports. note - support cards don't actually use a unique sprite, just text on placeholder sprite
     vector<Button> buttons; // vector to hold play button and discard button
-  public:
-    // constructor
-    Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
-    {
-      // declared outside the switch so that it exists even if 
-      JokerDeck jkDeck;
-      SupportDeck spDeck;
+    JokerDeck jkDeck;
+    SupportDeck spDeck;
 
-      // window setup
-      window.setSize({800,600});
-      window.setTitle("Lucky Card Game");
-      if (!font.loadFromFile("assets/DejaVuSans.ttf")) {
-        std::cerr << "Failed to load font\n";
-      }
-      
+    void showMainMenu() {
       // allow user to choose an action, and perform the action using a switch statement
       std::string strings[3] = {"Play","Leaderboard","Exit"};
       std::string title = "Lucky Card Game";
@@ -75,21 +81,210 @@ class Game {
       int choice = getChoice(title,3,strings,colours);
       switch(choice) {
         case 0:
-          // resets the joker, support deck for new games
-          jkDeck.makeDeck();
-          spDeck.makeDeck();
+          handleNameInput();
+          if (nameEntered) {
+            // resets the joker, support deck for new games
+            jkDeck.makeDeck();
+            spDeck.makeDeck();
 
-          // runs the game
-          sfml_runGame(jkDeck, spDeck);
+            // runs the game
+            sfml_runGame(jkDeck, spDeck);
+          }
           break;
         case 1:
-          window.close();
-          std::cout << "Leaderboard not yet implemented." << std::endl;
+          displayLeaderboard();
           break;
         default:
           window.close();
           break;
+      } 
+    }
+    
+    void loadLeaderboard() {
+      highscores.clear();
+      ifstream file(leaderboardFile);
+      if (file.is_open()) {
+        string line;
+        LeaderboardEntry entry;
+        while (file >> entry.name >> entry.score) {
+          highscores.push_back(entry);
+        }
+        file.close();
+        sort(highscores.begin(), highscores.end());
+        if (highscores.size() > maxLeaderboardEntries) {
+          highscores.resize(maxLeaderboardEntries);
+        }
       }
+    }
+
+    void saveLeaderboard() {
+      ofstream file(leaderboardFile);
+      if (file.is_open()) {
+        for (int i = 0; i < highscores.size(); i++) {
+          file << highscores[i].name << " " << highscores[i].score << "\n";
+        }
+        file.close();
+      }
+    }
+
+    void updateLeaderboard(const string& name, int score) {
+      if (score < 0) {
+        sf::Text errorMsg; // initialize text object 'errorMsg'
+        errorMsg.setString("Error: Score cannot be negative."); // set text
+        errorMsg.setCharacterSize(20); // set character size
+        errorMsg.setFillColor(sf::Color::Red); // set text color
+        errorMsg.setPosition(window.getSize().x/2 - errorMsg.getGlobalBounds().width/2, 150); // set text position
+        window.draw(errorMsg); // draw everything of text object 'errorMsg'
+        window.display(); // display error message (this is used and not other places as this is appearing in the current frame)
+
+        sf::sleep(sf::seconds(3)); // 3 seconds to know error happend 
+        return;
+      }
+      highscores.push_back(LeaderboardEntry(name, score));
+      sort(highscores.begin(), highscores.end());
+      if (highscores.size() > maxLeaderboardEntries) {
+        highscores.resize(maxLeaderboardEntries);
+      }
+      saveLeaderboard();
+    }
+
+    void displayLeaderboard() {
+      window.clear(sf::Color::Black); // clearing the window to make sure that there is no residue of the previous frame
+      
+      sf::Text title; // initialize text object 'title'
+      title.setFont(font); // set font
+      title.setString("LEADERBOARD"); // set text
+      title.setCharacterSize(30); // set character size
+      title.setFillColor(sf::Color::White); // set text color
+      title.setPosition(window.getSize().x/2 - title.getGlobalBounds().width/2, 50); // set text position
+      window.draw(title); // draw everything of text object 'title'
+
+      if (highscores.empty()) {
+        sf::Text noScores; // initialize text object 'noScores'
+        noScores.setFont(font); // set font
+        noScores.setString("No scores recorded yet!"); // set text
+        noScores.setCharacterSize(20); // set character size
+        noScores.setFillColor(sf::Color::White); // set text color
+        noScores.setPosition(window.getSize().x/2 - noScores.getGlobalBounds().width/2, 150); // set text position
+        window.draw(noScores); // draw everything of text object 'noScores'
+      } 
+      else {
+        for (int i = 0; i < highscores.size(); i++) { // loop thru each entry
+          sf::Text entry; // initialize text object 'entry'
+          entry.setFont(font); // set font  
+          entry.setString(to_string(i + 1) + ". " + highscores[i].name + " - " + to_string(highscores[i].score)); // set text
+          entry.setCharacterSize(20); // set character size
+          entry.setFillColor(sf::Color::White); // set text color
+          entry.setPosition(50, 150 + i * 40); // set text position
+          window.draw(entry); // draw everything of text object 'entry'
+        }
+      }
+
+      sf::RectangleShape backButton; // initialize rectangle object 'backButton'
+      backButton.setSize({100, 40}); // set button size 
+      backButton.setFillColor(sf::Color::Green); // set button color
+      backButton.setPosition(window.getSize().x/2 - 50, window.getSize().y - 100); // set button position
+      window.draw(backButton); // draw everything of rectangle object 'backButton'
+
+      sf::Text backText; // initialize text object 'backText'
+      backText.setFont(font); // set font
+      backText.setString("Back"); // set text
+      backText.setCharacterSize(20); // set character size
+      backText.setFillColor(sf::Color::Black); // set text color to black
+      backText.setPosition(window.getSize().x/2 - 25, window.getSize().y - 88); // set text position
+      window.draw(backText); // draw everything of text object 'backText'
+
+      window.display(); // display leaderboard
+
+      while (window.isOpen()) { // while window is open we check for windows is closed or not else if we check we clicked the back button or not, if back button is clicked we display the main menu
+        sf::Event event;
+        while (window.pollEvent(event)) {
+          if (event.type == sf::Event::Closed) {
+            window.close();
+          }
+          if (event.type == sf::Event::MouseButtonPressed) {
+            sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
+            if (backButton.getGlobalBounds().contains(mousePos)) { // we check for the mouse being over the back button (mouse position is bounded in the region of  back button)
+              showMainMenu();
+              return;
+            }
+          }
+        }
+      }
+    }
+
+    void handleNameInput() {
+      sf::Text nameAskPrompt; // initialize text object 'nameAskPrompt'
+      nameAskPrompt.setFont(font); // set font
+      nameAskPrompt.setString("Enter your name (max 15 chars, no spaces):"); // set text
+      nameAskPrompt.setCharacterSize(20); // set character size
+      nameAskPrompt.setFillColor(sf::Color::White); // set text color
+      nameAskPrompt.setPosition(50, window.getSize().y/2 - 50); // set text position
+
+      sf::Text nameInput; // initialize text object 'nameInput'
+      nameInput.setFont(font); // set font
+      nameInput.setCharacterSize(20); // set character size
+      nameInput.setFillColor(sf::Color::Black); // set text color
+      nameInput.setPosition(60, window.getSize().y/2 + 15); // set text position
+
+      sf::RectangleShape nameInputBox; // initialize rectangle object 'nameInputBox'
+      nameInputBox.setSize({300, 40}); // set box size
+      nameInputBox.setFillColor(sf::Color::White); // set box color to white
+      nameInputBox.setOutlineThickness(2); // set boundary thickness
+      nameInputBox.setOutlineColor(sf::Color::White); // set boundary color
+      nameInputBox.setPosition(50, window.getSize().y/2 + 10); // set text position
+
+      while (window.isOpen() && !nameEntered) {
+        sf::Event event; 
+        while (window.pollEvent(event)) {
+          // Window close
+          if (event.type == sf::Event::Closed) {
+            window.close();
+          }
+          // Text Input (backspace, normal text, and space)
+          if (event.type == sf::Event::TextEntered) {
+            // Backspace
+            if (event.text.unicode == '\b' && !playerName.empty()) {
+              playerName.pop_back();
+            }
+            // Space, newline, return, tab and 15 characters limit and unicode 64 to 90
+            else if (event.text.unicode > 64 && event.text.unicode < 123 && playerName.length() < 15 && event.text.unicode != ' ' && event.text.unicode != '\n' && event.text.unicode != '\r' && event.text.unicode != '\t') {
+              playerName += static_cast<char>(event.text.unicode);
+            }
+            nameInput.setString(playerName);
+          }
+          // Enter key pressed
+          if (event.type == sf::Event::KeyPressed) {
+            if (event.key.code == sf::Keyboard::Return && !playerName.empty()) {
+              nameEntered = true;
+            }
+          }
+        }
+
+        // display window
+        window.clear(sf::Color::Black); // clear the window to make sure that there is no residue of the previous frame
+        window.draw(nameAskPrompt); // draw the text object 'nameAskPrompt'
+        window.draw(nameInputBox); // draw the rectangle object 'nameInputBox'
+        window.draw(nameInput); // draw the text object 'nameInput'
+        window.display(); // display the window
+      }
+    }
+
+
+  public:
+    // constructor
+    Game(): round(0), minimumScore(100), difficulty(1), window(sf::VideoMode(800, 600), "Lucky Card Game")
+    {
+      loadLeaderboard();
+      
+      // window setup
+      window.setSize({800,600});
+      window.setTitle("Lucky Card Game");
+      if (!font.loadFromFile("assets/DejaVuSans.ttf")) {
+        std::cerr << "Failed to load font\n";
+      }
+
+      showMainMenu();
     };
 
     // user chooses what they would like to do
