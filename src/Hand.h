@@ -227,8 +227,8 @@ class Hand {
       out += "Jokers/Items added " + fx_chips + " chips and " + fx_mults + " mults.\n";
       out += "Score: " + total_chips + " chips x " + total_mults + " mults = " + total_score;
       out += added_hands + added_discards;
-      return out;
       handsCount--;
+      return out;
     };
 
     void discardPlayingCards(PlayingDeck& playDeck) 
@@ -279,12 +279,10 @@ class Hand {
           if (playDeck.getDeck()[i]->get_color().compare(CardColor[1]) == 0) {
             return "\nStar card " + playDeck.getDeck()[i]->get_rank() + " of " +playDeck.getDeck()[i]->get_suit() + "s added a bonus hand";
             this->handsCount++;
-          }
-          else {
-            return "";
           };
         };
       };
+      return "";
     };
 
     std::string add_discardsCount (PlayingDeck& playDeck) // adds bonus discard count from the color of the cards (blue)
@@ -296,12 +294,10 @@ class Hand {
           if (playDeck.getDeck()[i]->get_color().compare(CardColor[2]) == 0) {
             return "\nStar card " + playDeck.getDeck()[i]->get_rank() + " of " + playDeck.getDeck()[i]->get_suit() + "s added a bonus discard.";
             this->discardsCount++;
-          }
-          else {
-            return "";
-          }
+          };
         };
       };
+      return "";
     };
 
     void subtract_handsCount() // reduce hand count by one, happens when user plays a hand
