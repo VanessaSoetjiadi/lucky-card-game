@@ -28,10 +28,10 @@ SFML Implementation related commits
 - [#7] SFML window, Main menu, Play Buttons functionalities [Isaac]
 
 Logic related commits
-- [#6] Text prototype completion - Game loop [Vanessa]
-- [#5] Hand, Game classes completion [Vanessa]
-- [#4] JokerCard, JokerDeck, EffectsCard abstract class class completion [Sam]
-- [#3] Abstract classes (Deck, AbstractPlayingDeck, AbstractEffectsDeck) completion [Sam]
-- [#2] PlayingCard, PlayingDeck, InitDeck class completion [Vanessa]
-- [#1] Deck, SupportCard, SupportDeck class completion [Sam]
+- [#6] Text prototype implementation - Game loop [Vanessa]
+- [#5] Hand, Game classes implementation [Vanessa]
+- [#4] JokerCard, JokerDeck, EffectsCard abstract class class implementation [Sam]
+- [#3] Abstract classes (Deck, AbstractPlayingDeck, AbstractEffectsDeck) implementation [Sam]
+- [#2] PlayingCard, PlayingDeck, InitDeck class implementation [Vanessa]
+- [#1] Deck, SupportCard, SupportDeck class implementation [Sam]
 - [#0] Project initialization [Vanessa]
