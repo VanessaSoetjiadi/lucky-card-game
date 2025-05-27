@@ -251,9 +251,8 @@ class Game {
                 if (buttons[i].rectangle.getGlobalBounds().contains(mousePos)) {
                   if (buttons[i].type == "play") {
                     IndexSet indexes = getChosenIndexes();
-                    cout << "Playing cards: " << indexes.playing_cards << " | ";
-                    cout << "Joker cards: " << indexes.joker_cards << " | ";
-                    cout << "Support cards: " << indexes.support_cards << endl;
+                    pickSupportCards(indexes.support_cards, spDeck);
+                    hand.calculateTotalScore(playDeck, jkDeck, spDeck);
                   }
                   else if (buttons[i].type == "discard") {
                     playDeck.discardCard(1); // test
