@@ -246,16 +246,20 @@ class Game {
                   support_sprites[i].card->choose();
                 }
               }
+
+              IndexSet indexes = getChosenIndexes(); // get indexes of chosen cards, which informs behaviour of play/discard buttons
+
               // render buttons
               for (int i = 0; i < buttons.size(); i++) {
                 if (buttons[i].rectangle.getGlobalBounds().contains(mousePos)) {
                   if (buttons[i].type == "play") {
-                    IndexSet indexes = getChosenIndexes();
                     pickSupportCards(indexes.support_cards, spDeck);
                     hand.calculateTotalScore(playDeck, jkDeck, spDeck);
                   }
                   else if (buttons[i].type == "discard") {
-                    playDeck.discardCard(1); // test
+                    hand.discardPlayingCards(playDeck);
+                    hand.manualDiscardEffectsCards(indexes.joker_cards, jkDeck);
+                    hand.manualDiscardEffectsCards(indexes.support_cards, spDeck);
                   }
                 }
               }
