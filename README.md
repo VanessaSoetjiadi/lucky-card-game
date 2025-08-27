@@ -10,6 +10,14 @@ Use the package manager git clone to install lucky card game.
 git clone https://github.com/VanessaSoetjiadi/lucky-card-game.git
 ```
 
+## Running the Game
+
+Open the folder and use the following command to play the game. Enjoy!
+
+```bash
+make
+```
+
 ## Contributions Change Log
 - [#20] Unit testing of the logics [Vanessa, Sam]
 
